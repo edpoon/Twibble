@@ -1,5 +1,3 @@
-#include <pebble.h>
-#include "streams.h"
 #include "event.h"
 
 #define NUM_MENU_SECTIONS 1
