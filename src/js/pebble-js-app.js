@@ -21,69 +21,90 @@ function sendMessage() {
   }
 }
 
-function getFollowedStreams() {
+function getFollowedStreams(offset) {
+  // Send at most 10 items for first request and at most 5 items for subsequent requests
+  var limit = 5;
+  if (offset === 0) {
+    limit = 10;
+  }
+
   // Fetch request for user's followed streams
   var req = new XMLHttpRequest();
-  req.open('GET', 'https://api.twitch.tv/kraken/streams/followed?oauth_token=' + localStorage.getItem('oauth token'), false);
+  req.open('GET', 'https://api.twitch.tv/kraken/streams/followed?limit=' + limit + '&oauth_token=' + localStorage.getItem('oauth token') + '&offset=' + offset, false);
   req.send(null);
-  var message;
   var response = JSON.parse(req.responseText);
-  // Number of streams/games sent to Pebble capped at 50
-  var total = Math.min(response._total, 50);
+
+  // Number of messages to send
+  var total = Math.min(response._total - offset, limit);
   for (var i = 0; i < total; i++) {
     var streamer = response.streams[i].channel.display_name;
     var game = response.streams[i].game;
-    // Construct array of dicts containing streams/games
-    message = {
-      1: streamer,
-      2: game
+    // Add items to array in preparation to send
+    var message = {
+      STREAMER_KEY: streamer,
+      GAME_KEY: game
     };
     messages.push(message);
   }
-  sendMessage(message);
+  sendMessage();
 }
 
-function getTopStreams() {
+function getTopStreams(offset) {
+  // Send at most 10 items for first request and at most 5 items for subsequent requests
+  var limit = 5;
+  if (offset === 0) {
+    limit = 10;
+  }
+
   // Fetch request for current top streams
   var req = new XMLHttpRequest();
-  req.open('GET', 'https://api.twitch.tv/kraken/streams?limit=100', false);
+  req.open('GET', 'https://api.twitch.tv/kraken/streams?limit=' + limit + '&offset=' + offset, false);
   req.send(null);
-  var message;
   var response = JSON.parse(req.responseText);
-  // Number of streams/games sent to Pebble capped at 50
-  var total = Math.min(response._total, 50);
+
+  // Number of messages to send
+  var total = Math.min(response._total - offset, limit);
   for (var i = 0; i < total; i++) {
     var streamer = response.streams[i].channel.display_name;
     var game = response.streams[i].game;
-    // Construct array of dicts containing streams/games
-    message = {
-      1: streamer,
-      2: game
+    // Add items to array in preparation to send
+    var message = {
+      STREAMER_KEY: streamer,
+      GAME_KEY: game
     };
     messages.push(message);
   }
-  sendMessage(message);
+
+  sendMessage();
 }
 
-function getFeaturedStreams() {
+function getFeaturedStreams(offset) {
+  // Send at most 10 items for first request and at most 5 items for subsequent requests
+  var limit = 5;
+  if (offset === 0) {
+    limit = 10;
+  }
+
   // Fetch request for current featured streams
   var req = new XMLHttpRequest();
-  req.open('GET', 'https://api.twitch.tv/kraken/streams/featured?limit=100', false);
+  req.open('GET', 'https://api.twitch.tv/kraken/streams/featured?limit= ' + limit + '&offset=' + offset, false);
   req.send(null);
-  var message;
   var response = JSON.parse(req.responseText);
-  // Number of streams/games sent to Pebble capped at 50
-  var total = Math.min(50, response.featured.length);
+
+  // Number of messages to send
+  var total = response.featured.length;
   for (var i = 0; i < total; i++) {
     var streamer = response.featured[i].stream.channel.name;
     var game = response.featured[i].stream.channel.game;
-    message = {
-      1: streamer,
-      2: game
+    // ADd items to array in preparation to send
+    var message = {
+      STREAMER_KEY: streamer,
+      GAME_KEY: game
     };
     messages.push(message);
   }
-  sendMessage(message);
+
+  sendMessage();
 }
 
 // Configuration window
@@ -104,10 +125,10 @@ Pebble.addEventListener("ready", function(e) {
 // Called when incoming message from the Pebble is received
 Pebble.addEventListener("appmessage", function(e) {
   if (e.payload.QUERY_KEY === 0) {
-    getFollowedStreams();
+    getFollowedStreams(e.payload.OFFSET_KEY);
   } else if (e.payload.QUERY_KEY === 1) {
-    getTopStreams();
+    getTopStreams(e.payload.OFFSET_KEY);
   } else if (e.payload.QUERY_KEY === 2) {
-    getFeaturedStreams();
+    getFeaturedStreams(e.payload.OFFSET_KEY);
   }
 });

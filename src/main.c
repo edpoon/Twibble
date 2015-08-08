@@ -1,6 +1,4 @@
-#include <pebble.h>
 #include "streams.h"
-#include "event.h"
 
 #define NUM_MENU_SECTIONS 1
 #define NUM_MENU_ITEMS 4
@@ -12,7 +10,7 @@ static SimpleMenuItem s_main_menu_items[NUM_MENU_ITEMS];
 static SimpleMenuSection s_main_menu_sections[NUM_MENU_SECTIONS];
 
 static void menu_layer_selection_select_call_back(int index, void *context) {
-        streams_window_create(index);
+        streams_window_init(index);
 }
 
 static void main_window_load(Window *window) {
@@ -64,6 +62,12 @@ static void main_window_unload(Window *window) {
 }
 
 static void init(void) {
+        // Register the AppMessage handlers
+        app_message_register_inbox_received(in_received_handler);
+        app_message_register_inbox_dropped(in_dropped_handler);
+        app_message_register_outbox_failed(out_failed_handler);
+        app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+
         // Create main window element and assign to pointer
         s_main_window = window_create();
 
@@ -72,12 +76,6 @@ static void init(void) {
                                            .load = main_window_load,
                                            .unload = main_window_unload,
                                    });
-
-        // Register the AppMessage handlers
-        app_message_register_inbox_received(in_received_handler);
-        app_message_register_inbox_dropped(in_dropped_handler);
-        app_message_register_outbox_failed(out_failed_handler);
-        app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
 
         // Show the window on the watch, with animated = true
         window_stack_push(s_main_window, true);
