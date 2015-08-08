@@ -1,32 +1,36 @@
-#include <pebble.h>
 #include "streams.h"
 #include "event.h"
 
-#define NUM_STREAM_SECTIONS 1
-#define MAX_STREAMER_NAME_LENGTH 25
-#define MAX_GAME_NAME_LENGTH 50
+#define NUM_MENU_SECTIONS 1
 
 static Window *streams_window;
-MenuLayer *streams_menu_layer;
-uint16_t num_streams;
-char streamers[100][25];
-char games[100][50];
+static StreamsMenu menu;
 
-void streams_window_create(uint8_t index) {
-        num_streams = 0;
+static void streams_window_load(Window *window);
+static void streams_window_unload(Window *window);
 
-        static int query;
-        query = index;
-        int *query_ptr = &query;
+// MenuLayer callbacks
+static void selection_changed(MenuLayer *menu_layer, MenuIndex new_index, MenuIndex old_index, void *callback_context);
+static void draw_row(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *callback_context);
+static uint16_t get_num_sections_callback(MenuLayer *menu_layer, void *ctx);
+static uint16_t get_num_rows_callback(struct MenuLayer *menu_layer, uint16_t section_index, void *callback_context);
 
-        // Send a request to PebbleKitJS for streams/games
-        send_message(*query_ptr);
+void streams_window_init(uint8_t index) {
+        // Setup menu struct
+        menu.count = 0;
+        menu.query = index;
+        menu.streamers = NULL;
+        menu.games = NULL;
+
+        static StreamsMenu *menu_ptr = &menu;
+
+        app_message_set_context(menu_ptr);
+
+        // Send a request to PebbleKitJS for items
+        send_message(menu.query, menu.count);
 
         // Create streams window element and assign to pointer
         streams_window = window_create();
-
-        // Attach the query number to the streams window
-        window_set_user_data(streams_window, query_ptr);
 
         // Set handlers to manage the elements inside the window
         window_set_window_handlers(streams_window, (WindowHandlers) {
@@ -38,40 +42,62 @@ void streams_window_create(uint8_t index) {
         window_stack_push(streams_window, true);
 }
 
-void streams_draw_row(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *callback_context) {
-        menu_cell_basic_draw(ctx, cell_layer, streamers[cell_index->row], games[cell_index->row], NULL);
+static void selection_changed(MenuLayer *menu_layer, MenuIndex new_index, MenuIndex old_index, void *callback_context) {
+  // Capping streams number of menu items at 250
+  if (menu.count % 5 == 0 && menu.count - new_index.row == 6  && old_index.row != 0 && menu.count < 250) {
+    APP_LOG(APP_LOG_LEVEL_INFO, "Row: %d, Count: %d", new_index.row, menu.count);
+                send_message(menu.query, menu.count);
+        }
 }
 
-uint16_t streams_menu_get_num_sections_callback(MenuLayer *menu_layer, void *ctx) {
-        return NUM_STREAM_SECTIONS;
+static void draw_row(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *callback_context) {
+        menu_cell_basic_draw(ctx, cell_layer, menu.streamers[cell_index->row], menu.games[cell_index->row], NULL);
 }
 
-uint16_t streams_menu_get_num_rows_callback(struct MenuLayer *menu_layer, uint16_t section_index, void *callback_context) {
-        return num_streams;
+static uint16_t get_num_sections_callback(MenuLayer *menu_layer, void *ctx) {
+        return NUM_MENU_SECTIONS;
 }
 
-void streams_window_load(Window *window) {
+static uint16_t get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *ctx) {
+        return menu.count;
+}
+
+static void streams_window_load(Window *window) {
         // Get the window's root layer
         Layer *window_layer = window_get_root_layer(window);
 
         // Get the boundaries
         GRect bounds = layer_get_bounds(window_layer);
 
-        streams_menu_layer = menu_layer_create(bounds);
+        // streams_menu_layer = menu_layer_create(bounds);
+        menu.layer = menu_layer_create(bounds);
 
-        menu_layer_set_callbacks(streams_menu_layer, NULL, (MenuLayerCallbacks) {
-                                         .get_num_sections = streams_menu_get_num_sections_callback,
-                                         .get_num_rows = streams_menu_get_num_rows_callback,
-                                         .draw_row = streams_draw_row,
+        menu_layer_set_callbacks(menu.layer, NULL, (MenuLayerCallbacks) {
+                                         .get_num_sections = get_num_sections_callback,
+                                         .get_num_rows = get_num_rows_callback,
+                                         .draw_row = draw_row,
+                                         .selection_changed = selection_changed
                                  });
 
-        menu_layer_set_click_config_onto_window(streams_menu_layer, window);
+        menu_layer_set_click_config_onto_window(menu.layer, window);
 
         // Add the menuLayer to the window's root layer
-        layer_add_child(window_layer, menu_layer_get_layer(streams_menu_layer));
+        layer_add_child(window_layer, menu_layer_get_layer(menu.layer));
 }
 
-void streams_window_unload(Window *window) {
-        menu_layer_destroy(streams_menu_layer);
+static void streams_window_unload(Window *window) {
+        // Clear memory
+        menu_layer_destroy(menu.layer);
+        for (int i = 0; i < menu.count; i++) {
+                free(menu.streamers[i]);
+                free(menu.games[i]);
+        }
+        free(menu.streamers);
+        free(menu.games);
+
+        // Set to NULL to avoid double free
+        menu.streamers = NULL;
+        menu.games = NULL;
+
         window_destroy(streams_window);
 }
