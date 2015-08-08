@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #include "streams.h"
+=======
+#include "event.h"
+>>>>>>> 357746961e5d87d965d50653632eb031f5420b7b
 
 #define NUM_MENU_SECTIONS 1
 #define NUM_MENU_ITEMS 4
