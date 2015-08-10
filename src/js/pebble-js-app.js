@@ -124,11 +124,11 @@ Pebble.addEventListener("ready", function(e) {
 
 // Called when incoming message from the Pebble is received
 Pebble.addEventListener("appmessage", function(e) {
-  if (e.payload.QUERY_KEY === 0) {
-    getFollowedStreams(e.payload.OFFSET_KEY);
-  } else if (e.payload.QUERY_KEY === 1) {
-    getTopStreams(e.payload.OFFSET_KEY);
-  } else if (e.payload.QUERY_KEY === 2) {
-    getFeaturedStreams(e.payload.OFFSET_KEY);
+  if (e.payload.QUERY_KEY[0] === 0) {
+    getFollowedStreams(e.payload.QUERY_KEY[1]);
+  } else if (e.payload.QUERY_KEY[0] === 1) {
+    getTopStreams(e.payload.QUERY_KEY[1]);
+  } else if (e.payload.QUERY_KEY[0] === 2) {
+    getFeaturedStreams(e.payload.QUERY_KEY[1]);
   }
 });
