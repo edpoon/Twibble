@@ -3,18 +3,17 @@
 // Key values for AppMessage dictionary
 enum {
         QUERY_KEY,
-        OFFSET_KEY,
         STREAMER_KEY,
         GAME_KEY,
 };
 
 // Write message to buffer and send
 void send_message(uint8_t query, uint8_t offset) {
+        uint8_t data[]  = {query, offset};
         DictionaryIterator *iter;
 
         app_message_outbox_begin(&iter);
-        dict_write_uint8(iter, QUERY_KEY, query);
-        dict_write_uint8(iter, OFFSET_KEY, offset);
+        dict_write_data(iter, QUERY_KEY, data, sizeof(data));
         dict_write_end(iter);
 
         app_message_outbox_send();
