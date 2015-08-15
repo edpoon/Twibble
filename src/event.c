@@ -1,10 +1,14 @@
 #include "event.h"
 
+#define MAX_NUM_MENU_ITEMS 50
+#define MAX_TITLE_LENGTH 25
+#define MAX_SUBTITLE_LENGTH 50
+
 // Key values for AppMessage dictionary
 enum {
         QUERY_KEY,
-        STREAMER_KEY,
-        GAME_KEY,
+        TITLE_KEY,
+        SUBTITLE_KEY
 };
 
 // Write message to buffer and send
@@ -26,22 +30,22 @@ void in_received_handler(DictionaryIterator *received, void *context) {
         menu->count++;
 
         // Allocate memory for another pointer
-        menu->streamers = realloc(menu->streamers, menu->count * sizeof(char *));
-        menu->games = realloc(menu->games, menu->count * sizeof(char *));
+        menu->titles = realloc(menu->titles, menu->count * sizeof(char *));
+        menu->subtitles = realloc(menu->subtitles, menu->count * sizeof(char *));
 
         // Allocate memory for another string
-        menu->streamers[count] = malloc(MAX_STREAMER_NAME_LENGTH + 1);
-        menu->games[count] = malloc(MAX_GAME_NAME_LENGTH + 1);
+        menu->titles[count] = malloc(MAX_TITLE_LENGTH + 1);
+        menu->subtitles[count] = malloc(MAX_SUBTITLE_LENGTH + 1);
 
         Tuple *tuple;
 
         // Add stream to storage
-        tuple = dict_find(received, STREAMER_KEY);
-        strcpy(menu->streamers[count], tuple->value->cstring);
+        tuple = dict_find(received, TITLE_KEY);
+        strcpy(menu->titles[count], tuple->value->cstring);
 
         // Add game to storage
-        tuple = dict_find(received, GAME_KEY);
-        strcpy(menu->games[count], tuple->value->cstring);
+        tuple = dict_find(received, SUBTITLE_KEY);
+        strcpy(menu->subtitles[count], tuple->value->cstring);
 
         menu_layer_reload_data(menu->layer);
 }

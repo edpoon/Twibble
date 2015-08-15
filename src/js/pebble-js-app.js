@@ -39,10 +39,12 @@ function getFollowedStreams(offset) {
   for (var i = 0; i < total; i++) {
     var streamer = response.streams[i].channel.display_name;
     var game = response.streams[i].game;
+    var viewers = response.streams[i].viewers + ' Viewers';
+    game += '\n' + viewers;
     // Add items to array in preparation to send
     var message = {
-      STREAMER_KEY: streamer,
-      GAME_KEY: game
+      TITLE_KEY: streamer,
+      SUBTITLE_KEY: game
     };
     messages.push(message);
   }
@@ -67,10 +69,12 @@ function getTopStreams(offset) {
   for (var i = 0; i < total; i++) {
     var streamer = response.streams[i].channel.display_name;
     var game = response.streams[i].game;
+    var viewers = response.streams[i].viewers + ' Viewers';
+    game += '\n' + viewers;
     // Add items to array in preparation to send
     var message = {
-      STREAMER_KEY: streamer,
-      GAME_KEY: game
+      TITLE_KEY: streamer,
+      SUBTITLE_KEY: game
     };
     messages.push(message);
   }
@@ -96,10 +100,11 @@ function getFeaturedStreams(offset) {
   for (var i = 0; i < total; i++) {
     var streamer = response.featured[i].stream.channel.name;
     var game = response.featured[i].stream.channel.game;
+    var viewers =  response.featured[i].stream.viewers + ' Viewers';
     // ADd items to array in preparation to send
     var message = {
-      STREAMER_KEY: streamer,
-      GAME_KEY: game
+      TITLE_KEY: streamer,
+      SUBTITLE_KEY: game
     };
     messages.push(message);
   }
