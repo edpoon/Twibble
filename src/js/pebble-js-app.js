@@ -100,7 +100,7 @@ function getFeaturedStreams(offset) {
   for (var i = 0; i < total; i++) {
     var streamer = response.featured[i].stream.channel.name;
     var game = response.featured[i].stream.channel.game;
-    var viewers =  response.featured[i].stream.viewers + ' Viewers';
+    var viewers = response.featured[i].stream.viewers + ' Viewers';
     // ADd items to array in preparation to send
     var message = {
       TITLE_KEY: streamer,
@@ -129,11 +129,15 @@ Pebble.addEventListener("ready", function(e) {
 
 // Called when incoming message from the Pebble is received
 Pebble.addEventListener("appmessage", function(e) {
-  if (e.payload.QUERY_KEY[0] === 0) {
-    getFollowedStreams(e.payload.QUERY_KEY[1]);
-  } else if (e.payload.QUERY_KEY[0] === 1) {
-    getTopStreams(e.payload.QUERY_KEY[1]);
-  } else if (e.payload.QUERY_KEY[0] === 2) {
-    getFeaturedStreams(e.payload.QUERY_KEY[1]);
+  switch (e.payload.QUERY_KEY) {
+    case 0:
+      getTopStreams(e.payload.OFFSET_KEY);
+      break;
+    case 1:
+      getFeaturedStreams(e.payload.OFFSET_KEY);
+      break;
+    case 2:
+      getFollowedStreams(e.payload.OFFSET_KEY);
+      break;
   }
 });
