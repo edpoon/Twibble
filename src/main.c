@@ -5,60 +5,66 @@
 
 // Main Window
 static Window *s_main_window;
-static SimpleMenuLayer *s_main_menu_layer;
-static SimpleMenuItem s_main_menu_items[NUM_MENU_ITEMS];
-static SimpleMenuSection s_main_menu_sections[NUM_MENU_SECTIONS];
+static MenuLayer *s_main_menu_layer;
+static GBitmap *cell_icons[NUM_MENU_ITEMS];
+static char *titles[NUM_MENU_ITEMS];
+static char *subtitles[NUM_MENU_ITEMS];
 
-static void menu_layer_selection_select_call_back(int index, void *context) {
-        streams_window_init(index);
+static void menu_layer_selection_select_call_back(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context) {
+        streams_window_init(cell_index->row);
+}
+
+static void draw_row(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *callback_context) {
+        // Transparent background
+        graphics_context_set_compositing_mode(ctx, GCompOpSet);
+        menu_cell_basic_draw(ctx, cell_layer, titles[cell_index->row], subtitles[cell_index->row], cell_icons[cell_index->row]);
+}
+
+static uint16_t get_num_sections_callback(MenuLayer *menu_layer, void *ctx) {
+        return NUM_MENU_SECTIONS;
+}
+
+static uint16_t get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *ctx) {
+        return NUM_MENU_ITEMS;
 }
 
 static void main_window_load(Window *window) {
-        // Setup the main menu items
-        s_main_menu_items[0] = (SimpleMenuItem) {
-                .title = "Following",
-                .subtitle = "Your streams",
-                .callback = menu_layer_selection_select_call_back
-        };
+        cell_icons[0] = gbitmap_create_with_resource(RESOURCE_ID_video_camera);
+        cell_icons[1] = gbitmap_create_with_resource(RESOURCE_ID_gamepad);
+        cell_icons[2] = gbitmap_create_with_resource(RESOURCE_ID_heart);
+        cell_icons[3] = gbitmap_create_with_resource(RESOURCE_ID_wrench);
 
-        s_main_menu_items[1] = (SimpleMenuItem) {
-                .title = "Top",
-                .subtitle = "Popular streams",
-                .callback = menu_layer_selection_select_call_back
-        };
+        titles[0] = "Channels";
+        titles[1] = "Games";
+        titles[2] = "Following";
+        titles[3] = "Settings";
 
-        s_main_menu_items[2] = (SimpleMenuItem) {
-                .title = "Front Page",
-                .subtitle = "Featured streams",
-                .callback = menu_layer_selection_select_call_back
-        };
+        subtitles[0] = "Top streams";
+        subtitles[1] = "Top games";
+        subtitles[2] = "Your favorites";
+        subtitles[3] = "Your account";
 
-        s_main_menu_items[3] = (SimpleMenuItem) {
-                .title = "About",
-                .subtitle = "About twebble"
-        };
-
-        // Setup the main menu section
-        s_main_menu_sections[0] = (SimpleMenuSection) {
-                .num_items = NUM_MENU_ITEMS,
-                .items = s_main_menu_items
-        };
-
-        // Get the window's root layer
         Layer *window_layer = window_get_root_layer(window);
-
-        // Get the boundaries
         GRect bounds = layer_get_bounds(window_layer);
+        s_main_menu_layer = menu_layer_create(bounds);
 
-        s_main_menu_layer = simple_menu_layer_create(bounds, window, s_main_menu_sections, NUM_MENU_SECTIONS, NULL);
+        menu_layer_set_callbacks(s_main_menu_layer, NULL, (MenuLayerCallbacks) {
+                                         .get_num_sections = get_num_sections_callback,
+                                         .get_num_rows = get_num_rows_callback,
+                                         .draw_row = draw_row,
+                                         .select_click = menu_layer_selection_select_call_back,
+                                 });
 
-        // Add the main menu layer to the main window's root layer
-        layer_add_child(window_layer, simple_menu_layer_get_layer(s_main_menu_layer));
+        menu_layer_set_click_config_onto_window(s_main_menu_layer, window);
+
+        layer_add_child(window_layer, menu_layer_get_layer(s_main_menu_layer));
 }
 
 static void main_window_unload(Window *window) {
-        // Destroy the Simple Menu Layer
-        simple_menu_layer_destroy(s_main_menu_layer);
+        menu_layer_destroy(s_main_menu_layer);
+        for (int i = 0; i < NUM_MENU_ITEMS; i++) {
+                gbitmap_destroy(cell_icons[i]);
+        }
 }
 
 static void init(void) {
