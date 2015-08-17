@@ -7,17 +7,22 @@
 // Key values for AppMessage dictionary
 enum {
         QUERY_KEY,
+        OFFSET_KEY,
         TITLE_KEY,
         SUBTITLE_KEY
 };
 
 // Write message to buffer and send
 void send_message(uint8_t query, uint8_t offset) {
-        uint8_t data[]  = {query, offset};
+
+        Tuplet queryTuplet = TupletInteger(QUERY_KEY, query);
+        Tuplet offsetTuplet = TupletInteger(OFFSET_KEY, offset);
+
         DictionaryIterator *iter;
 
         app_message_outbox_begin(&iter);
-        dict_write_data(iter, QUERY_KEY, data, sizeof(data));
+        dict_write_tuplet(iter, &queryTuplet);
+        dict_write_tuplet(iter, &offsetTuplet);
         dict_write_end(iter);
 
         app_message_outbox_send();
