@@ -1,4 +1,5 @@
 #include "streams.h"
+#include "settings.h"
 
 #define NUM_MENU_SECTIONS 1
 #define NUM_MENU_ITEMS 4
