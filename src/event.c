@@ -9,8 +9,10 @@ enum {
         QUERY_KEY,
         OFFSET_KEY,
         TITLE_KEY,
-        SUBTITLE_KEY
+        SUBTITLE_KEY,
+        USERNAME_KEY
 };
+static char *user_name;
 
 // Write message to buffer and send
 void send_message(uint8_t query, uint8_t offset) {
@@ -51,6 +53,11 @@ void in_received_handler(DictionaryIterator *received, void *context) {
         // Add game to storage
         tuple = dict_find(received, SUBTITLE_KEY);
         strcpy(menu->subtitles[count], tuple->value->cstring);
+
+        tuple = dict_find(received, USERNAME_KEY);
+        strcpy(user_name, tuple->value->cstring);
+        APP_LOG(APP_LOG_LEVEL_INFO, tuple->value->cstring);
+
 
         menu_layer_reload_data(menu->layer);
 }
