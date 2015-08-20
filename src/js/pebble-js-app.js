@@ -112,6 +112,42 @@ function getFeaturedStreams(offset) {
   sendMessage();
 }
 
+/* Deletes token from local storage.
+ * At the watch end, this should result in
+ * the user getting logged out.*/
+function removeToken() {
+    if(localStorage.getItem('oauth token')) {
+        localStorage.removeItem('oauth token');
+        var message = {
+            TOKEN_REMOVE_KEY: "Removed token"
+        };
+    }
+    else {
+        var message = {
+            TOKEN_REMOVE_KEY: "Token already deleted"
+        };
+    }
+    send_message();
+}
+
+/*Retrieves user name from token
+ * still need to handle error cases. */
+function getUserName() {
+  var req = new XMLHttpRequest();
+  req.open('GET', 'https://api.twitch.tv/kraken?oauth_token=0z7aboxelw2npt53h9ax0vxcwutrox', false);
+
+  req.send(null);
+  var response = JSON.parse(req.responseText);
+  var userName = response.token.user_name;
+
+  var message = {
+    USERNAME_KEY: userName
+  };
+  messages.push(message);
+
+  sendMessage();
+}
+
 // Configuration window
 Pebble.addEventListener("showConfiguration", function(e) {
   Pebble.openURL('https://api.twitch.tv/kraken/oauth2/authorize?response_type=token&client_id=kqxn6nov00how5uom46vlxb7p32xvf6&redirect_uri=pebblejs://close&scope=user_read');
@@ -138,6 +174,12 @@ Pebble.addEventListener("appmessage", function(e) {
       break;
     case 2:
       getFollowedStreams(e.payload.OFFSET_KEY);
+      break;
+    case 3:
+      removeToken();
+      break;
+    case 4:
+      getUserName();
       break;
   }
 });
