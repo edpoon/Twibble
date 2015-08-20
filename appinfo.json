@@ -32,12 +32,12 @@
       "file": "icons/video_camera_6441a5_18.png"
     }, {
       "type": "png",
-      "name": "TurboSmile",
-      "file": "icons/checkmark.png"
+      "name": "check",
+      "file": "icons/check-circle_6441a5_18.png"
     }, {
       "type": "png",
-      "name": "TurboFrown",
-      "file": "icons/crossout.png"
+      "name": "cross",
+      "file": "icons/times-circle_6441a5_18.png"
     }]
   },
   "sdkVersion": "3",
