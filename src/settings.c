@@ -1,4 +1,4 @@
-#include <settings.h>
+#include "settings.h"
 
 static Window *account_window;
 static ActionBarLayer *action_bar;
@@ -39,7 +39,7 @@ static void account_window_load(Window *window) {
   action_bar_layer_set_icon(action_bar, BUTTON_ID_DOWN, no_icon);
 
   account_menu.text = text_layer_create(GRect(0, 45, 110, 200));
-  text_layer_set_text(account_menu.text, "Currently logged in as: \n Navies \n \n Log out?");
+  text_layer_set_text(account_menu.text, "Loading...");
   text_layer_set_text_alignment(account_menu.text, GTextAlignmentCenter);
 
   Layer *window_layer = window_get_root_layer(window);
@@ -55,8 +55,11 @@ static void account_window_unload(Window *window) {
 }
 
 void account_window_init(uint8_t index) {
-  account_menu.user_name = NULL;
+  app_message_set_context(&account_menu);
+  //This message is to retrieve the name of the currently logged in user
+  send_message(4,0);
   account_window = window_create();
+
   window_set_window_handlers(account_window, (WindowHandlers) {
       .load = account_window_load,
         .unload = account_window_unload,

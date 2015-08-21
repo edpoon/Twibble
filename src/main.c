@@ -12,7 +12,12 @@ static char *titles[NUM_MENU_ITEMS];
 static char *subtitles[NUM_MENU_ITEMS];
 
 static void menu_layer_selection_select_call_back(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context) {
-        streams_window_init(cell_index->row);
+        if(cell_index->row == 3) {
+                account_window_init(cell_index->row);
+        }
+        else {
+                streams_window_init(cell_index->row);
+        }
 }
 
 static void draw_row(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *callback_context) {
