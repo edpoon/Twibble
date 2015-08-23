@@ -41,6 +41,9 @@ static void account_window_load(Window *window) {
   account_menu.text = text_layer_create(GRect(0, 45, 110, 200));
   text_layer_set_text(account_menu.text, "Loading...");
   text_layer_set_text_alignment(account_menu.text, GTextAlignmentCenter);
+  //This message is to retrieve the name of the currently logged in user
+  send_message(4,0);
+  account_window = window_create();
 
   Layer *window_layer = window_get_root_layer(window);
   layer_add_child(window_layer, text_layer_get_layer(account_menu.text));
@@ -56,9 +59,6 @@ static void account_window_unload(Window *window) {
 
 void account_window_init(uint8_t index) {
   app_message_set_context(&account_menu);
-  //This message is to retrieve the name of the currently logged in user
-  send_message(4,0);
-  account_window = window_create();
 
   window_set_window_handlers(account_window, (WindowHandlers) {
       .load = account_window_load,

@@ -127,14 +127,14 @@ function removeToken() {
             TOKEN_REMOVE_KEY: "Token already deleted"
         };
     }
-    send_message();
+    sendMessage();
 }
 
 /*Retrieves user name from token
  * still need to handle error cases. */
 function getUserName() {
   var req = new XMLHttpRequest();
-  req.open('GET', 'https://api.twitch.tv/kraken?oauth_token=0z7aboxelw2npt53h9ax0vxcwutrox', false);
+  req.open('GET', 'https://api.twitch.tv/kraken?oauth_token=' + localStorage.getItem('oauth token'), false);
 
   req.send(null);
   var response = JSON.parse(req.responseText);
