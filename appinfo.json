@@ -3,9 +3,10 @@
     "QUERY_KEY": 0,
     "OFFSET_KEY": 1,
     "TITLE_KEY": 2,
-    "SUBTITLE_KEY": 3,
+    "SUBTITLE1_KEY": 3,
     "USERNAME_KEY": 4,
-    "TOKEN_REMOVE_KEY":5
+      "TOKEN_REMOVE_KEY": 5,
+      "SUBTITLE2_KEY": 6
   },
   "capabilities": [
     "configurable"
@@ -30,6 +31,10 @@
       "type": "png",
       "name": "video_camera",
       "file": "icons/video_camera_6441a5_18.png"
+    }, {
+        "type": "png",
+        "name": "viewer",
+        "file": "icons/user_6441a5_18.png"
     }, {
       "type": "png",
       "name": "check",
