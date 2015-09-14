@@ -1,23 +1,18 @@
 #include "event.h"
 
-#define MAX_NUM_MENU_ITEMS 50
-#define MAX_TITLE_LENGTH 150
-#define MAX_SUBTITLE_LENGTH 50
-#define MAX_USERNAME_LENGTH 25
-
 // Key values for AppMessage dictionary
 enum {
   QUERY_KEY,
   OFFSET_KEY,
   TITLE_KEY,
   SUBTITLE1_KEY,
+  SUBTITLE2_KEY,
   USERNAME_KEY,
-  SUBTITLE2_KEY
 };
 
 // Write message to buffer and send
-void send_message(uint8_t query, uint8_t offset) {
-  Tuplet queryTuplet = TupletInteger(QUERY_KEY, query);
+void send_message(const char *query, uint8_t offset) {
+  Tuplet queryTuplet = TupletCString(QUERY_KEY, query);
   Tuplet offsetTuplet = TupletInteger(OFFSET_KEY, offset);
 
   DictionaryIterator *iter;
@@ -32,10 +27,10 @@ void send_message(uint8_t query, uint8_t offset) {
 
 // Called when a message is received from PebbleKitJS
 void in_received_handler(DictionaryIterator *received, void *context) {
-  //Complete assignment of tuples used in the app messages
+  // Complete assignment of tuples used in the app messages
   Tuple *title_tuple = dict_find(received, TITLE_KEY);
   Tuple *subtitle1_tuple = dict_find(received, SUBTITLE1_KEY);
-  Tuple *subtitle2_tuple = dict_find(received, 9001);
+  Tuple *subtitle2_tuple = dict_find(received, SUBTITLE2_KEY);
   Tuple *username_tuple = dict_find(received, USERNAME_KEY);
 
   // If we are receiving a TITLE_KEY, we know it must have been called
@@ -52,9 +47,9 @@ void in_received_handler(DictionaryIterator *received, void *context) {
     menu->subtitles2 = realloc(menu->subtitles2, menu->count * sizeof(char *));
 
     // Allocate memory for another string
-    menu->titles[count] = malloc(MAX_TITLE_LENGTH + 1);
-    menu->subtitles1[count] = malloc(MAX_SUBTITLE_LENGTH + 1);
-    menu->subtitles2[count] = malloc(MAX_SUBTITLE_LENGTH + 1);
+    menu->titles[count] = malloc(strlen(title_tuple->value->cstring) + 1);
+    menu->subtitles1[count] = malloc(strlen(subtitle1_tuple->value->cstring) + 1);
+    menu->subtitles2[count] = malloc(strlen(subtitle2_tuple->value->cstring) + 1);
 
     // Add stream to storage
     strcpy(menu->titles[count], title_tuple->value->cstring);
@@ -70,12 +65,10 @@ void in_received_handler(DictionaryIterator *received, void *context) {
 
     menu_layer_reload_data(menu->layer);
   }
-
   if (username_tuple) {
     AccountMenu *menu = (AccountMenu *)app_message_get_context();
-
-    //Use of snprintf here is to get the exact space needed to hold the text.
-    //text_layer_set_text doesn't seem to support formatting, hence the buffer
+    // Use of snprintf here is to get the exact space needed to hold the text.
+    // text_layer_set_text doesn't seem to support formatting, hence the buffer
     size_t needed = snprintf(NULL, 0, "Currently logged in as: \n %s \n \n Log out?", username_tuple->value->cstring);
     char  *buffer = malloc(needed+1);
     snprintf(buffer, needed+1, "Currently logged in as: \n %s \n \n Log out?", username_tuple->value->cstring);

@@ -44,7 +44,7 @@ function getFollowedStreams(offset) {
         var message = {
             TITLE_KEY: streamer,
             SUBTITLE1_KEY: game,
-            9001: viewers
+            SUBTITLE2_KEY: viewers
         };
         messages.push(message);
     }
@@ -74,7 +74,7 @@ function getTopStreams(offset) {
         var message = {
             TITLE_KEY: streamer,
             SUBTITLE1_KEY: game,
-            9001 : viewers
+            SUBTITLE2_KEY: viewers
         };
         messages.push(message);
     }
@@ -84,9 +84,11 @@ function getTopStreams(offset) {
 
 function getTopGames(offset) {
     var limit = 5;
+    /*
     if (offset === 0) {
         limit = 10;
     }
+     */
 
     var req = new XMLHttpRequest();
     req.open('GET', 'https://api.twitch.tv/kraken/games/top?limit=' + limit + '&offset=' + offset, false);
@@ -102,7 +104,7 @@ function getTopGames(offset) {
         var message = {
             TITLE_KEY: game,
             SUBTITLE1_KEY: channels,
-            9001: viewers
+            SUBTITLE2_KEY: viewers
         };
         messages.push(message);
     }
@@ -110,25 +112,25 @@ function getTopGames(offset) {
     sendMessage();
 }
 
-function getStreams(offset, game) {
+function getStreams(game, offset) {
     var limit = 5;
     var req = new XMLHttpRequest();
-    req.open('GET', 'https://api.twitch.tv/kraken/streams?game=' + game + '&limit=' + limit, false);
+  req.open('GET', 'https://api.twitch.tv/kraken/streams?game=' + game + '&limit=' + limit, false);
     req.send(null);
     var response = JSON.parse(req.responseText);
 
     var total = Math.min(response.streams.length - offset, limit);
     for (var i = 0; i < total; i++) {
-        var status = response.streams[i].channel.status;
+        // Issues with special characters
+        var status = (response.streams[i].channel.status);
         var streamer = response.streams[i].channel.name;
         var viewers = response.streams[i].viewers.toString();
 
-        console.log(status);
-
+        console.log(status + streamer + viewers);
         var message = {
             TITLE_KEY: status,
             SUBTITLE1_KEY: streamer,
-            9001: viewers
+            SUBTITLE2_KEY: viewers
         };
         messages.push(message);
     }
@@ -136,7 +138,8 @@ function getStreams(offset, game) {
     sendMessage();
 }
 
-/* Deletes token from local storage.
+/**
+ * Deletes token from local storage.
  * At the watch end, this should result in
  * the user getting logged out.
  */
@@ -155,21 +158,22 @@ function removeToken() {
     sendMessage();
 }
 
-/*Retrieves user name from token
- * still need to handle error cases. */
+/*
+ * Retrieves user name from token
+ * still need to handle error cases.
+ */
 function getUserName() {
+  console.log("Getting user name");
     var req = new XMLHttpRequest();
     req.open('GET', 'https://api.twitch.tv/kraken?oauth_token=' + localStorage.getItem('oauth token'), false);
-
     req.send(null);
     var response = JSON.parse(req.responseText);
     var userName = response.token.user_name;
-
+    console.log(userName);
     var message = {
         USERNAME_KEY: userName
     };
     messages.push(message);
-
     sendMessage();
 }
 
@@ -179,32 +183,40 @@ Pebble.addEventListener("showConfiguration", function(e) {
 });
 
 // Called when the configuration window is closed
-Pebble.addEventListener("webviewclosed", function(e) {});
+Pebble.addEventListener("webviewclosed", function(e) {
+    // Decode and parse config data as JSON
+    var config_data = JSON.parse(decodeURIComponent(e.response));
+    console.log('Config window returned:' + JSON.stringify(config_data));
+});
 
 // Called when Pebble first starts
 Pebble.addEventListener("ready", function(e) {
     // Store a sample oauth token into local storage for now
     var oauth_token = '0z7aboxelw2npt53h9ax0vxcwutrox';
     localStorage.setItem('oauth token', oauth_token);
+    // getUserName();
 });
 
 // Called when incoming message from the Pebble is received
 Pebble.addEventListener("appmessage", function(e) {
     switch (e.payload.QUERY_KEY) {
-    case 0:
+    case "Channels":
         getTopStreams(e.payload.OFFSET_KEY);
         break;
-    case 1:
+    case "Games":
         getTopGames(e.payload.OFFSET_KEY);
         break;
-    case 2:
+    case "Following":
         getFollowedStreams(e.payload.OFFSET_KEY);
         break;
-    case 3:
+    case "Token":
         removeToken();
         break;
-    case 4:
+    case "User":
         getUserName();
+        break;
+    default:
+        getStreams(e.payload.QUERY_KEY, e.payload.OFFSET_KEY);
         break;
     }
 });

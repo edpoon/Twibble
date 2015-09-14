@@ -11,7 +11,8 @@ AccountMenu account_menu;
 
 void up_click_config_handler(ClickRecognizerRef recognizer, void *context) {
   // Tell phone to delete token
-  send_message(3, 1);
+  //  send_message(3, 1);
+  send_message("temp", 1);
   // Pop window with animated = true
   window_stack_pop(true);
 }
@@ -28,7 +29,8 @@ static void click_config_provider(void *context) {
 
 static void account_window_load(Window *window) {
   // Get token from phone
-  send_message(3, 0);
+  //  send_message(3, 0);
+  //  send_message("Token", 0);
   yes_icon = gbitmap_create_with_resource(RESOURCE_ID_check);
   no_icon = gbitmap_create_with_resource(RESOURCE_ID_cross);
 
@@ -37,13 +39,15 @@ static void account_window_load(Window *window) {
   action_bar_layer_set_click_config_provider(action_bar, click_config_provider);
   action_bar_layer_set_icon(action_bar, BUTTON_ID_UP, yes_icon);
   action_bar_layer_set_icon(action_bar, BUTTON_ID_DOWN, no_icon);
+  action_bar_layer_set_background_color(action_bar, GColorBlack);
 
   account_menu.text = text_layer_create(GRect(0, 45, 110, 200));
   text_layer_set_text(account_menu.text, "Loading...");
   text_layer_set_text_alignment(account_menu.text, GTextAlignmentCenter);
-  //This message is to retrieve the name of the currently logged in user
-  send_message(4,0);
-  account_window = window_create();
+  text_layer_set_font(account_menu.text, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
+  // This message is to retrieve the name of the currently logged in user
+  //  send_message(4,0);
+  send_message("User", 0);
 
   Layer *window_layer = window_get_root_layer(window);
   layer_add_child(window_layer, text_layer_get_layer(account_menu.text));
@@ -57,8 +61,10 @@ static void account_window_unload(Window *window) {
   window_destroy(account_window);
 }
 
-void account_window_init(uint8_t index) {
+void account_window_init() {
   app_message_set_context(&account_menu);
+
+  account_window = window_create();
 
   window_set_window_handlers(account_window, (WindowHandlers) {
       .load = account_window_load,
