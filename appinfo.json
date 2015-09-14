@@ -1,59 +1,58 @@
 {
-  "appKeys": {
-    "QUERY_KEY": 0,
-    "OFFSET_KEY": 1,
-    "TITLE_KEY": 2,
-    "SUBTITLE1_KEY": 3,
-    "USERNAME_KEY": 4,
-      "TOKEN_REMOVE_KEY": 5,
-      "SUBTITLE2_KEY": 6
-  },
-  "capabilities": [
-    "configurable"
-  ],
-  "companyName": "epoon061@uottawa.ca",
-  "longName": "template",
-  "projectType": "native",
-  "resources": {
-    "media": [{
-      "type": "png",
-      "name": "gamepad",
-      "file": "icons/gamepad_6441a5_18.png"
-    }, {
-      "type": "png",
-      "name": "heart",
-      "file": "icons/heart_6441a5_18.png"
-    }, {
-      "type": "png",
-      "name": "wrench",
-      "file": "icons/wrench_6441a5_18.png"
-    }, {
-      "type": "png",
-      "name": "video_camera",
-      "file": "icons/video_camera_6441a5_18.png"
-    }, {
-        "type": "png",
-        "name": "viewer",
-        "file": "icons/user_6441a5_18.png"
-    }, {
-      "type": "png",
-      "name": "check",
-      "file": "icons/check-circle_6441a5_18.png"
-    }, {
-      "type": "png",
-      "name": "cross",
-      "file": "icons/times-circle_6441a5_18.png"
-    }]
-  },
-  "sdkVersion": "3",
-  "shortName": "template",
-  "targetPlatforms": [
-    "aplite",
-    "basalt"
-  ],
-  "uuid": "2457eaaa-989c-4c1f-8d8f-9110fe84cad2",
-  "versionLabel": "1.0",
-  "watchapp": {
-    "watchface": false
-  }
+    "appKeys": {
+        "QUERY_KEY": 0,
+        "OFFSET_KEY": 1,
+        "TITLE_KEY": 2,
+        "SUBTITLE1_KEY": 3,
+        "SUBTITLE2_KEY": 4,
+        "USERNAME_KEY": 5
+    },
+    "capabilities": [
+        "configurable"
+    ],
+    "companyName": "",
+    "longName": "Twibble",
+    "projectType": "native",
+    "resources": {
+        "media": [{
+            "type": "png",
+            "name": "gamepad",
+            "file": "icons/gamepad.png"
+        }, {
+            "type": "png",
+            "name": "heart",
+            "file": "icons/heart.png"
+        }, {
+            "type": "png",
+            "name": "wrench",
+            "file": "icons/wrench.png"
+        }, {
+            "type": "png",
+            "name": "video_camera",
+            "file": "icons/video_camera.png"
+        }, {
+            "type": "png",
+            "name": "viewer",
+            "file": "icons/user.png"
+        }, {
+            "type": "png",
+            "name": "check",
+            "file": "icons/check.png"
+        }, {
+            "type": "png",
+            "name": "cross",
+            "file": "icons/cross.png"
+        }]
+    },
+    "sdkVersion": "3",
+    "shortName": "Twibble",
+    "targetPlatforms": [
+        "aplite",
+        "basalt"
+    ],
+    "uuid": "2457eaaa-989c-4c1f-8d8f-9110fe84cad2",
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": false
+    }
 }
