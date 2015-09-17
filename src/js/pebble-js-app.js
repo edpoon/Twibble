@@ -1,5 +1,6 @@
 // This will be an array of dicts to send to Pebble
 var messages = [];
+var MAX_ITEMS = 5;
 
 // Function to send a message to the Pebble using AppMessage API
 function sendMessage() {
@@ -21,21 +22,23 @@ function sendMessage() {
     }
 }
 
-function getFollowedStreams(offset) {
-    // Send at most 10 items for first request and at most 5 items for subsequent requests
-    var limit = 5;
-    if (offset === 0) {
-        limit = 10;
-    }
-
-    // Fetch request for user's followed streams
+// Helper function to send fetch Twitch API data
+function sendDataRequest(url) {
     var req = new XMLHttpRequest();
-    req.open('GET', 'https://api.twitch.tv/kraken/streams/followed?limit=' + limit + '&oauth_token=' + localStorage.getItem('oauth token') + '&offset=' + offset, false);
+    var response;
+    req.open('GET', url, false);
     req.send(null);
-    var response = JSON.parse(req.responseText);
+    if (req.readyState == 4 && req.status == 200) {
+        response = JSON.parse(req.responseText);
+    }
+    return response;
+}
 
+function getFollowedStreams(offset) {
+    var url = 'https://api.twitch.tv/kraken/streams/followed?limit=5&oauth_token=' + localStorage.getItem('oauth token') + '&offset=' + offset;
+    var response = sendDataRequest(url);
     // Number of messages to send
-    var total = Math.min(response._total - offset, limit);
+    var total = Math.min(response._total - offset, MAX_ITEMS);
     for (var i = 0; i < total; i++) {
         var streamer = response.streams[i].channel.display_name;
         var game = response.streams[i].game;
@@ -52,20 +55,10 @@ function getFollowedStreams(offset) {
 }
 
 function getTopStreams(offset) {
-    // Send at most 10 items for first request and at most 5 items for subsequent requests
-    var limit = 5;
-    if (offset === 0) {
-        limit = 10;
-    }
-
-    // Fetch request for current top streams
-    var req = new XMLHttpRequest();
-    req.open('GET', 'https://api.twitch.tv/kraken/streams?limit=' + limit + '&offset=' + offset, false);
-    req.send(null);
-    var response = JSON.parse(req.responseText);
-
+    var url = 'https://api.twitch.tv/kraken/streams?limit=5&offset=' + offset;
+    var response = sendDataRequest(url);
     // Number of messages to send
-    var total = Math.min(response._total - offset, limit);
+    var total = Math.min(response._total - offset, MAX_ITEMS);
     for (var i = 0; i < total; i++) {
         var streamer = response.streams[i].channel.display_name;
         var game = response.streams[i].game;
@@ -78,29 +71,18 @@ function getTopStreams(offset) {
         };
         messages.push(message);
     }
-
     sendMessage();
 }
 
 function getTopGames(offset) {
-    var limit = 5;
-    /*
-    if (offset === 0) {
-        limit = 10;
-    }
-     */
-
-    var req = new XMLHttpRequest();
-    req.open('GET', 'https://api.twitch.tv/kraken/games/top?limit=' + limit + '&offset=' + offset, false);
-    req.send(null);
-    var response = JSON.parse(req.responseText);
-
-    var total = Math.min(response._total - offset, limit);
+    var url = 'https://api.twitch.tv/kraken/games/top?limit=&offset=' + offset;
+    var response = sendDataRequest(url);
+    // Number of messages to send
+    var total = Math.min(response.top.length - offset, MAX_ITEMS);
     for (var i = 0; i < total; i++) {
         var game = response.top[i].game.name;
         var channels = response.top[i].channels.toString() + ' Live Channels';
         var viewers = response.top[i].viewers.toString();
-
         var message = {
             TITLE_KEY: game,
             SUBTITLE1_KEY: channels,
@@ -108,25 +90,19 @@ function getTopGames(offset) {
         };
         messages.push(message);
     }
-
     sendMessage();
 }
 
 function getStreams(game, offset) {
-    var limit = 5;
-    var req = new XMLHttpRequest();
-  req.open('GET', 'https://api.twitch.tv/kraken/streams?game=' + game + '&limit=' + limit, false);
-    req.send(null);
-    var response = JSON.parse(req.responseText);
-
-    var total = Math.min(response.streams.length - offset, limit);
+    var url = 'https://api.twitch.tv/kraken/streams?limit=5&game=' + game;
+    var response = sendDataRequest(url);
+    // Number of messages to send
+    var total = Math.min(response.streams.length - offset, MAX_ITEMS);
     for (var i = 0; i < total; i++) {
         // Issues with special characters
         var status = (response.streams[i].channel.status);
         var streamer = response.streams[i].channel.name;
         var viewers = response.streams[i].viewers.toString();
-
-        console.log(status + streamer + viewers);
         var message = {
             TITLE_KEY: status,
             SUBTITLE1_KEY: streamer,
@@ -134,7 +110,6 @@ function getStreams(game, offset) {
         };
         messages.push(message);
     }
-
     sendMessage();
 }
 
@@ -144,34 +119,35 @@ function getStreams(game, offset) {
  * the user getting logged out.
  */
 function removeToken() {
-    if(localStorage.getItem('oauth token')) {
+    console.log("Logging off");
+    if (localStorage.getItem('oauth token')) {
         localStorage.removeItem('oauth token');
         var message = {
-            TOKEN_REMOVE_KEY: "Removed token"
+            9001: "Successfuly logged out!"
         };
-    }
-    else {
+    } else {
         var message = {
-            TOKEN_REMOVE_KEY: "Token already deleted"
+            9001: "Not currently logged in. \n \n Please login using the Pebble app on your phone"
         };
     }
+    messages.push(message);
     sendMessage();
 }
 
-/*
- * Retrieves user name from token
- * still need to handle error cases.
- */
+// Retrieves Twitch username using the locally stored oauth token
 function getUserName() {
-  console.log("Getting user name");
     var req = new XMLHttpRequest();
     req.open('GET', 'https://api.twitch.tv/kraken?oauth_token=' + localStorage.getItem('oauth token'), false);
     req.send(null);
     var response = JSON.parse(req.responseText);
-    var userName = response.token.user_name;
-    console.log(userName);
+    var username = "Currently logged in as: \n \n";
+    if (response.token.user_name) {
+        username += response.token.user_name + "\n Log out?";
+    } else {
+        username = "Not currently logged in. \n \n Please login using the Pebble app on your phone";
+    }
     var message = {
-        USERNAME_KEY: userName
+        USERNAME_KEY: username
     };
     messages.push(message);
     sendMessage();
@@ -194,7 +170,6 @@ Pebble.addEventListener("ready", function(e) {
     // Store a sample oauth token into local storage for now
     var oauth_token = '0z7aboxelw2npt53h9ax0vxcwutrox';
     localStorage.setItem('oauth token', oauth_token);
-    // getUserName();
 });
 
 // Called when incoming message from the Pebble is received
@@ -209,7 +184,7 @@ Pebble.addEventListener("appmessage", function(e) {
     case "Following":
         getFollowedStreams(e.payload.OFFSET_KEY);
         break;
-    case "Token":
+    case "Remove":
         removeToken();
         break;
     case "User":
