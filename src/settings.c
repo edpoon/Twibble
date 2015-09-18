@@ -2,19 +2,19 @@
 
 static Window *account_window;
 static ActionBarLayer *action_bar;
-// static TextLayer *text;
 static GBitmap *yes_icon;
 static GBitmap *no_icon;
-// static char *user_name;
+
 
 AccountMenu account_menu;
 
 void up_click_config_handler(ClickRecognizerRef recognizer, void *context) {
   // Tell phone to delete token
   //  send_message(3, 1);
-  send_message("temp", 1);
   // Pop window with animated = true
-  window_stack_pop(true);
+  //  window_stack_pop(true);
+  text_layer_set_text(account_menu.text, "Logging off...");
+  send_message("Remove", 0);
 }
 
 void down_click_config_handler(ClickRecognizerRef recognizer, void *context) {
@@ -28,9 +28,6 @@ static void click_config_provider(void *context) {
 }
 
 static void account_window_load(Window *window) {
-  // Get token from phone
-  //  send_message(3, 0);
-  //  send_message("Token", 0);
   yes_icon = gbitmap_create_with_resource(RESOURCE_ID_check);
   no_icon = gbitmap_create_with_resource(RESOURCE_ID_cross);
 
@@ -39,14 +36,12 @@ static void account_window_load(Window *window) {
   action_bar_layer_set_click_config_provider(action_bar, click_config_provider);
   action_bar_layer_set_icon(action_bar, BUTTON_ID_UP, yes_icon);
   action_bar_layer_set_icon(action_bar, BUTTON_ID_DOWN, no_icon);
-  action_bar_layer_set_background_color(action_bar, GColorBlack);
 
-  account_menu.text = text_layer_create(GRect(0, 45, 110, 200));
+  account_menu.text = text_layer_create(GRect(0, 0, 110, 200));
   text_layer_set_text(account_menu.text, "Loading...");
   text_layer_set_text_alignment(account_menu.text, GTextAlignmentCenter);
   text_layer_set_font(account_menu.text, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
   // This message is to retrieve the name of the currently logged in user
-  //  send_message(4,0);
   send_message("User", 0);
 
   Layer *window_layer = window_get_root_layer(window);
