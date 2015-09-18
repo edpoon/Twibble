@@ -32,6 +32,7 @@ void in_received_handler(DictionaryIterator *received, void *context) {
   Tuple *subtitle1_tuple = dict_find(received, SUBTITLE1_KEY);
   Tuple *subtitle2_tuple = dict_find(received, SUBTITLE2_KEY);
   Tuple *username_tuple = dict_find(received, USERNAME_KEY);
+  Tuple *logout_tuple = dict_find(received, 9001);
 
   // If we are receiving a TITLE_KEY, we know it must have been called
   // from the streams menu, so we know the context is a StreamsMenu,
@@ -65,15 +66,11 @@ void in_received_handler(DictionaryIterator *received, void *context) {
 
     menu_layer_reload_data(menu->layer);
   }
-  if (username_tuple) {
+
+  if (username_tuple || logout_tuple) {
     AccountMenu *menu = (AccountMenu *)app_message_get_context();
-    // Use of snprintf here is to get the exact space needed to hold the text.
-    // text_layer_set_text doesn't seem to support formatting, hence the buffer
-    size_t needed = snprintf(NULL, 0, "Currently logged in as: \n %s \n \n Log out?", username_tuple->value->cstring);
-    char  *buffer = malloc(needed+1);
-    snprintf(buffer, needed+1, "Currently logged in as: \n %s \n \n Log out?", username_tuple->value->cstring);
-    text_layer_set_text(menu->text, buffer);
-    free(buffer);
+    char *text = username_tuple ? username_tuple->value->cstring : logout_tuple->value->cstring;
+    text_layer_set_text(menu->text, text);
   }
 }
 
