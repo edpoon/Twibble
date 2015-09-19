@@ -100,12 +100,12 @@ function getStreams(game, offset) {
     var total = Math.min(response.streams.length - offset, MAX_ITEMS);
     for (var i = 0; i < total; i++) {
         // Issues with special characters
-        var status = (response.streams[i].channel.status);
         var streamer = response.streams[i].channel.name;
+        var status = (response.streams[i].channel.status);
         var viewers = response.streams[i].viewers.toString();
         var message = {
-            TITLE_KEY: status,
-            SUBTITLE1_KEY: streamer,
+            TITLE_KEY: streamer,
+            SUBTITLE1_KEY: status,
             SUBTITLE2_KEY: viewers
         };
         messages.push(message);
