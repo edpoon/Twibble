@@ -8,7 +8,7 @@
 // For text-scrolling
 #define SCROLL_MENU_ITEM_WAIT_TIMER 1000
 #define SCROLL_MENU_ITEM_TIMER 400
-#define MENU_CHARS_VISIBLE 10
+#define MENU_CHARS_VISIBLE 20
 
 static StreamsMenu menu_stack[MENU_STACK_DEPTH];
 static int8_t menu_stack_pointer = -1; // Points to the current position in the menu stack
@@ -26,7 +26,6 @@ static int16_t get_cell_height(struct MenuLayer *menu_layer, MenuIndex *cell_ind
 // For text-scrolling
 static void initiate_menu_scroll_timer(StreamsMenu* menu_ptr);
 static void scroll_menu_callback(void* data);
-int len;
 
 void streams_window_init(char *query) {
   // New item in menu stack
@@ -49,24 +48,26 @@ void streams_window_init(char *query) {
 
   // Set handlers to manage the elements inside the window
   window_set_window_handlers(menu_stack[menu_stack_pointer].window, (WindowHandlers) {
-      .load = streams_window_load,
-        .unload = streams_window_unload,
-        });
+    .load = streams_window_load,
+    .unload = streams_window_unload,
+  });
 
   // Show the window on the watch with animated = true
   window_stack_push(menu_stack[menu_stack_pointer].window, true);
 }
 
 static void menu_layer_select_click(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context) {
-  if (strcmp(menu_stack[menu_stack_pointer].query, "Games") == 0) {
-    streams_window_init(menu_stack[menu_stack_pointer].titles[cell_index->row]);
+  StreamsMenu *menu = (StreamsMenu *)callback_context;
+  if (strcmp(menu->query, "Games") == 0) {
+    streams_window_init(menu->titles[cell_index->row]);
   }
 }
 
 static void selection_changed(MenuLayer *menu_layer, MenuIndex new_index, MenuIndex old_index, void *callback_context) {
   StreamsMenu *menu = (StreamsMenu *)callback_context;
-  if (menu_stack[menu_stack_pointer].count % 5 == 0 && menu_stack[menu_stack_pointer].count - new_index.row == 6  && old_index.row != 0) {
-    send_message(menu_stack[menu_stack_pointer].query, menu_stack[menu_stack_pointer].count);
+  // TODO: Make loading of menu items smoother
+  if (menu->count % 5 == 0 && menu->count - new_index.row == 6  && old_index.row != 0) {
+    send_message(menu->query, menu->count);
   }
 
   menu->moving_forwards_in_menu = new_index.row >= old_index.row;
@@ -78,32 +79,33 @@ static void selection_changed(MenuLayer *menu_layer, MenuIndex new_index, MenuIn
 }
 
 static void draw_row(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *callback_context) {
-  MenuIndex menuIndex = menu_layer_get_selected_index(menu_stack->layer);
+  StreamsMenu *menu = (StreamsMenu *)callback_context;
+  MenuIndex menuIndex = menu_layer_get_selected_index(menu->layer);
   // Draw title
-  graphics_draw_text(ctx, menu_stack[menu_stack_pointer].titles[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD), GRect(5, 0, 140, 15), GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
+  graphics_draw_text(ctx, menu->titles[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD), GRect(5, 0, 140, 15), GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
   // Draw first subtitle
   if (menuIndex.row == cell_index->row) {
-    graphics_draw_text(ctx, menu_stack[menu_stack_pointer].subtitles1[cell_index->row] + menu_stack->menu_scroll_offset, fonts_get_system_font(FONT_KEY_GOTHIC_18), GRect(5, 15, 140, 15), GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
+    graphics_draw_text(ctx, menu->subtitles1[cell_index->row] + menu->menu_scroll_offset, fonts_get_system_font(FONT_KEY_GOTHIC_18), GRect(5, 15, 140, 15), GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
   } else {
-    graphics_draw_text(ctx, menu_stack[menu_stack_pointer].subtitles1[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_18), GRect(5, 15, 140, 15), GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
+    graphics_draw_text(ctx, menu->subtitles1[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_18), GRect(5, 15, 140, 15), GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
   }
 
   // Draw viewer icon according to platform
 #ifdef PBL_PLATFORM_BASALT
   graphics_context_set_compositing_mode(ctx, GCompOpSet);
-  graphics_draw_bitmap_in_rect(ctx, menu_stack[menu_stack_pointer].viewer_icon, GRect(5, 35, 20, 20));
+  graphics_draw_bitmap_in_rect(ctx, menu->viewer_icon, GRect(5, 35, 20, 20));
 #elif PBL_PLATFORM_APLITE
   graphics_context_set_compositing_mode(ctx, GCompOpAssignInverted);
-  graphics_draw_bitmap_in_rect(ctx, menu_stack[menu_stack_pointer].viewer_icon, GRect(5, 37, 14, 14));
+  graphics_draw_bitmap_in_rect(ctx, menu->viewer_icon, GRect(5, 37, 14, 14));
 #endif
 
   // Draw second subtitle
-  graphics_draw_text(ctx, menu_stack[menu_stack_pointer].subtitles2[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_18), GRect(25, 32, 140, 15), GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
+  graphics_draw_text(ctx, menu->subtitles2[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_18), GRect(25, 32, 140, 15), GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
 
-  len = strlen(menu_stack[menu_stack_pointer].subtitles1[cell_index->row]);
-  
-  if (len - MENU_CHARS_VISIBLE - menu_stack->menu_scroll_offset > 0) {
-    menu_stack->scrolling_still_required = true;
+  int subtitle1_length = strlen(menu->subtitles1[menuIndex.row]);
+
+  if (subtitle1_length - MENU_CHARS_VISIBLE - menu->menu_scroll_offset > 0) {
+    menu->scrolling_still_required = true;
   }
 }
 
@@ -129,13 +131,13 @@ static void streams_window_load(Window *window) {
   menu_stack[menu_stack_pointer].layer = menu_layer_create(bounds);
 
   menu_layer_set_callbacks(menu_stack[menu_stack_pointer].layer, &menu_stack[menu_stack_pointer], (MenuLayerCallbacks) {
-      .get_num_sections = get_num_sections_callback,
-        .get_num_rows = get_num_rows_callback,
-        .get_cell_height = get_cell_height,
-        .draw_row = draw_row,
-        .selection_changed = selection_changed,
-        .select_click = menu_layer_select_click
-        });
+    .get_num_sections = get_num_sections_callback,
+    .get_num_rows = get_num_rows_callback,
+    .get_cell_height = get_cell_height,
+    .draw_row = draw_row,
+    .selection_changed = selection_changed,
+    .select_click = menu_layer_select_click
+  });
 
   menu_layer_set_click_config_onto_window(menu_stack[menu_stack_pointer].layer, window);
 
@@ -162,6 +164,9 @@ static void streams_window_unload(Window *window) {
   menu_stack[menu_stack_pointer].subtitles1 = NULL;
   menu_stack[menu_stack_pointer].subtitles2 = NULL;
 
+  // Reset menu scroll
+  menu_stack[menu_stack_pointer].menu_scroll_offset = 0;
+
   window_destroy(window);
   // One less item in the menu stack
   menu_stack_pointer--;
@@ -170,7 +175,7 @@ static void streams_window_unload(Window *window) {
 static void initiate_menu_scroll_timer(StreamsMenu* menu_ptr) {
   // If there is already a timer then reschedule it, otherwise create one
   bool need_to_create_timer = true;
-  menu_ptr->scrolling_still_required = true;
+  menu_ptr->scrolling_still_required = false;
   menu_ptr->menu_scroll_offset = 0;
   menu_ptr->menu_reloading_to_scroll = false;
   if (menu_ptr->menu_scroll_timer) {
@@ -179,29 +184,28 @@ static void initiate_menu_scroll_timer(StreamsMenu* menu_ptr) {
   }
   if (need_to_create_timer) {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Creating timer");
-    menu_ptr->menu_scroll_timer = app_timer_register(SCROLL_MENU_ITEM_WAIT_TIMER,
-                                                     scroll_menu_callback, menu_ptr);
+    menu_ptr->menu_scroll_timer = app_timer_register(SCROLL_MENU_ITEM_WAIT_TIMER, scroll_menu_callback, menu_ptr);
   }
 }
 
 static void scroll_menu_callback(void* data) {
   StreamsMenu* menu = (StreamsMenu*) data;
+  MenuIndex menuIndex = menu_layer_get_selected_index(menu->layer);
+  int temp = strlen(menu->subtitles1[menuIndex.row]);
+  APP_LOG(APP_LOG_LEVEL_INFO, "Subtitle length: %d Offset: %d", temp, menu->menu_scroll_offset);
+  APP_LOG(APP_LOG_LEVEL_INFO, "Math : %d", temp - MENU_CHARS_VISIBLE - menu->menu_scroll_offset);
   if (!menu->layer) {
     return;
   }
-  APP_LOG(APP_LOG_LEVEL_INFO, "subtitle length: %d", len - MENU_CHARS_VISIBLE - menu_stack->menu_scroll_offset);
   menu->menu_scroll_timer = NULL;
   menu->menu_scroll_offset++;
   if (!menu->scrolling_still_required) {
     return;
   }
-  MenuIndex menuIndex = menu_layer_get_selected_index(menu->layer);
   if(menuIndex.row != 0) {
     menu->menu_reloading_to_scroll = true;
   }
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Sitting reloading to scroll true");
   menu->scrolling_still_required = false;
   menu_layer_reload_data(menu->layer);
-  menu->menu_scroll_timer = app_timer_register(SCROLL_MENU_ITEM_TIMER, scroll_menu_callback, 
-                                               menu);
+  menu->menu_scroll_timer = app_timer_register(SCROLL_MENU_ITEM_TIMER, scroll_menu_callback, menu);
 }
