@@ -30,24 +30,52 @@ void in_received_handler(DictionaryIterator *received, void *context) {
   AccountMenu *settings = (AccountMenu *)app_message_get_context();
 
   Tuple *tuple = dict_read_first(received);
+
+  // Dictionaries are unordered, so we need to only increment the menu count when the item is the first in the dict
+  bool first = true;
   while (tuple) {
     switch (tuple->key) {
     case TITLE_KEY:
-      menu->count++;
+      if(first) {
+          menu->count++;
+          first = false;
+      }
       // Allocate memory for another pointer
-      menu->titles = realloc(menu->titles, menu->count * sizeof(char *));
+      if(menu->titles) {
+          menu->titles = realloc(menu->titles, menu->count * sizeof(char *));
+      }
+      else {
+          menu->titles = malloc(menu->count * sizeof(char *));
+      }
+      //APP_LOG(APP_LOG_LEVEL_INFO, "%s", tuple->value->cstring);
+      APP_LOG(APP_LOG_LEVEL_INFO, "Count: %d", menu->count);
       // Allocate memory for another string
       menu->titles[menu->count - 1] = malloc(strlen(tuple->value->cstring) + 1);
       // Add title to storage
       strcpy(menu->titles[menu->count - 1], tuple->value->cstring);
+      menu_layer_reload_data(menu->layer);
       break;
     case SUBTITLE1_KEY:
-      menu->subtitles1 = realloc(menu->subtitles1, menu->count * sizeof(char *));
+      if(first) {
+          menu->count++;
+          first = false;
+      }
+      if(menu->subtitles1) {
+          menu->subtitles1 = realloc(menu->subtitles1, menu->count * sizeof(char *));
+      }
+      else menu->subtitles1 = malloc(menu->count * sizeof(char *));
       menu->subtitles1[menu->count - 1] = malloc(strlen(tuple->value->cstring) + 1);
       strcpy(menu->subtitles1[menu->count - 1], tuple->value->cstring);
       break;
     case SUBTITLE2_KEY:
-      menu->subtitles2 = realloc(menu->subtitles2, menu->count * sizeof(char *));
+      if(first) {
+          menu->count++;
+          first = false;
+      }
+      if(menu->subtitles2) {
+          menu->subtitles2 = realloc(menu->subtitles2, menu->count * sizeof(char *));
+      }
+      else menu->subtitles2 = malloc(menu->count * sizeof(char *));
       menu->subtitles2[menu->count - 1] = malloc(strlen(tuple->value->cstring) + 1);
       strcpy(menu->subtitles2[menu->count - 1], tuple->value->cstring);
       menu_layer_reload_data(menu->layer);
