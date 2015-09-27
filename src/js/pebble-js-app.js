@@ -35,7 +35,8 @@ function sendDataRequest(url) {
 }
 
 function getFollowedStreams(offset) {
-    var url = 'https://api.twitch.tv/kraken/streams/followed?limit=5&oauth_token=' + localStorage.getItem('oauth token') + '&offset=' + offset;
+    console.log(localStorage.getItem('OAUTH_TOKEN'));
+    var url = 'https://api.twitch.tv/kraken/streams/followed?limit=5&oauth_token=' + localStorage.getItem('OAUTH_TOKEN') + '&offset=' + offset;
     var response = sendDataRequest(url);
     // Number of messages to send
     var total = Math.min(response._total - offset, MAX_ITEMS);
@@ -119,6 +120,7 @@ function getStreams(game, offset) {
  * the user getting logged out.
  */
 function removeToken() {
+    /*
     console.log("Logging off");
     if (localStorage.getItem('oauth token')) {
         localStorage.removeItem('oauth token');
@@ -132,12 +134,24 @@ function removeToken() {
     }
     messages.push(message);
     sendMessage();
+     */
+
+    var url = 'https://api.twitch.tv/kraken/oauth2/authorization/kqxn6nov00how5uom46vlxb7p32xvf6?oauth_token='+ localStorage.getItem('OAUTH_TOKEN');
+    console.log(url);
+    var req = new XMLHttpRequest();
+    req.open('DELETE', url, false);
+
+    req.send(null);
+    var response = JSON.parse(req.responseText);
+    console.log(JSON.stringify(response));
 }
 
 // Retrieves Twitch username using the locally stored oauth token
 function getUserName() {
+    console.log(localStorage.getItem('OAUTH_TOKEN'));
+
     var req = new XMLHttpRequest();
-    req.open('GET', 'https://api.twitch.tv/kraken?oauth_token=' + localStorage.getItem('oauth token'), false);
+    req.open('GET', 'https://api.twitch.tv/kraken?oauth_token=' + localStorage.getItem('OAUTH_TOKEN'), false);
     req.send(null);
     var response = JSON.parse(req.responseText);
     var username = "Currently logged in as: \n \n";
@@ -155,21 +169,14 @@ function getUserName() {
 
 // Configuration window
 Pebble.addEventListener("showConfiguration", function(e) {
-    Pebble.openURL('https://api.twitch.tv/kraken/oauth2/authorize?response_type=token&client_id=kqxn6nov00how5uom46vlxb7p32xvf6&redirect_uri=pebblejs://close&scope=user_read');
+    Pebble.openURL('https://api.twitch.tv/kraken/oauth2/authorize?response_type=token&client_id=kqxn6nov00how5uom46vlxb7p32xvf6&redirect_uri=pebblejs://close&scope=user_read&force_verify=true');
 });
 
 // Called when the configuration window is closed
 Pebble.addEventListener("webviewclosed", function(e) {
-    // Decode and parse config data as JSON
-    var config_data = JSON.parse(decodeURIComponent(e.response));
-    console.log('Config window returned:' + JSON.stringify(config_data));
-});
-
-// Called when Pebble first starts
-Pebble.addEventListener("ready", function(e) {
-    // Store a sample oauth token into local storage for now
-    var oauth_token = '0z7aboxelw2npt53h9ax0vxcwutrox';
-    localStorage.setItem('oauth token', oauth_token);
+    // Grab the token from the URL
+    var OAUTH_TOKEN = e.response.slice(13, 43);
+    localStorage.setItem("OAUTH_TOKEN", OAUTH_TOKEN);
 });
 
 // Called when incoming message from the Pebble is received
