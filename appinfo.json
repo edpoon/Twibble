@@ -24,8 +24,8 @@
             "file": "icons/heart.png"
         }, {
             "type": "png",
-            "name": "wrench",
-            "file": "icons/wrench.png"
+            "name": "glitch",
+            "file": "icons/glitch.png"
         }, {
             "type": "png",
             "name": "video_camera",
@@ -34,14 +34,6 @@
             "type": "png",
             "name": "viewer",
             "file": "icons/user.png"
-        }, {
-            "type": "png",
-            "name": "check",
-            "file": "icons/check.png"
-        }, {
-            "type": "png",
-            "name": "cross",
-            "file": "icons/cross.png"
         }]
     },
     "sdkVersion": "3",
