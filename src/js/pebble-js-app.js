@@ -101,12 +101,12 @@ function getStreams(game, offset) {
     var total = Math.min(response.streams.length - offset, MAX_ITEMS);
     for (var i = 0; i < total; i++) {
         // Issues with special characters
+        var status = response.streams[i].channel.status;
         var streamer = response.streams[i].channel.name;
-        var status = (response.streams[i].channel.status);
         var viewers = response.streams[i].viewers.toString();
         var message = {
-            TITLE_KEY: streamer,
-            SUBTITLE1_KEY: status,
+            TITLE_KEY: status,
+            SUBTITLE1_KEY: streamer,
             SUBTITLE2_KEY: viewers
         };
         messages.push(message);
@@ -114,51 +114,13 @@ function getStreams(game, offset) {
     sendMessage();
 }
 
-/**
- * Deletes token from local storage.
- * At the watch end, this should result in
- * the user getting logged out.
- */
-function removeToken() {
-    /*
-    console.log("Logging off");
-    if (localStorage.getItem('oauth token')) {
-        localStorage.removeItem('oauth token');
-        var message = {
-            9001: "Successfuly logged out!"
-        };
-    } else {
-        var message = {
-            9001: "Not currently logged in. \n \n Please login using the Pebble app on your phone"
-        };
-    }
-    messages.push(message);
-    sendMessage();
-     */
-
-    var url = 'https://api.twitch.tv/kraken/oauth2/authorization/kqxn6nov00how5uom46vlxb7p32xvf6?oauth_token='+ localStorage.getItem('OAUTH_TOKEN');
-    console.log(url);
-    var req = new XMLHttpRequest();
-    req.open('DELETE', url, false);
-
-    req.send(null);
-    var response = JSON.parse(req.responseText);
-    console.log(JSON.stringify(response));
-}
-
 // Retrieves Twitch username using the locally stored oauth token
 function getUserName() {
-    console.log(localStorage.getItem('OAUTH_TOKEN'));
-
-    var req = new XMLHttpRequest();
-    req.open('GET', 'https://api.twitch.tv/kraken?oauth_token=' + localStorage.getItem('OAUTH_TOKEN'), false);
-    req.send(null);
-    var response = JSON.parse(req.responseText);
-    var username = "Currently logged in as: \n \n";
-    if (response.token.user_name) {
-        username += response.token.user_name + "\n Log out?";
-    } else {
-        username = "Not currently logged in. \n \n Please login using the Pebble app on your phone";
+    var url = 'https://api.twitch.tv/kraken?oauth_token=' + localStorage.getItem('OAUTH_TOKEN');
+    var response = sendDataRequest(url);
+    var username = response.token.user_name;
+    if (!username) {
+        username = "Not Logged In";
     }
     var message = {
         USERNAME_KEY: username
@@ -166,6 +128,10 @@ function getUserName() {
     messages.push(message);
     sendMessage();
 }
+
+Pebble.addEventListener("ready", function(e) {
+    getUserName();
+});
 
 // Configuration window
 Pebble.addEventListener("showConfiguration", function(e) {
@@ -190,9 +156,6 @@ Pebble.addEventListener("appmessage", function(e) {
         break;
     case "Following":
         getFollowedStreams(e.payload.OFFSET_KEY);
-        break;
-    case "Remove":
-        removeToken();
         break;
     case "User":
         getUserName();
