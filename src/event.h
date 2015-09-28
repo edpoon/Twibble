@@ -1,8 +1,8 @@
 #pragma once
 
 #include <pebble.h>
+#include "home.h"
 #include "streams.h"
-#include "settings.h"
 
 void send_message(const char *query, uint8_t offset);
 void in_received_handler(DictionaryIterator *received, void *context);
