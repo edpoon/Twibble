@@ -36,12 +36,11 @@ void streams_window_init(char *query) {
   menu_stack[menu_stack_pointer].window = window_create();
   menu_stack[menu_stack_pointer].count = 0;
   menu_stack[menu_stack_pointer].query = query;
-  menu_stack[menu_stack_pointer].titles = NULL;
-  menu_stack[menu_stack_pointer].subtitles1 = NULL;
-  menu_stack[menu_stack_pointer].subtitles2 = NULL;
+  menu_stack[menu_stack_pointer].titles = malloc(sizeof(char *));
+  menu_stack[menu_stack_pointer].subtitles1 = malloc(sizeof(char *));
+  menu_stack[menu_stack_pointer].subtitles2 = malloc(sizeof(char *));
   menu_stack[menu_stack_pointer].viewer_icon = gbitmap_create_with_resource(RESOURCE_ID_viewer);
 
-  //  app_message_set_context(&menu);
   app_message_set_context(&menu_stack[menu_stack_pointer]);
 
   // Send a request to PebbleKitJS for items
@@ -90,7 +89,7 @@ static void draw_row(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_ind
     graphics_context_set_text_color(ctx, GColorBlack);
   #endif
 
-  //Draw Title
+  // Draw Title
   if (menuIndex.row == cell_index->row) {
     graphics_draw_text(ctx,
             (menu->scrolling_still_required) ? menu->titles[cell_index->row] + menu->menu_scroll_offset : menu->titles[cell_index->row],
@@ -125,7 +124,7 @@ static void draw_row(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_ind
   // Draw second subtitle
   graphics_draw_text(ctx, menu->subtitles2[cell_index->row], fonts_get_system_font(FONT_KEY_GOTHIC_18), GRect(25, 32, 140, 15), GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
 
-  //Need to determine whether to keep scrolling
+  // Need to determine whether to keep scrolling
   int title_length = strlen(menu->titles[menuIndex.row]);
   int subtitle1_length = strlen(menu->subtitles1[menuIndex.row]);
 
@@ -196,9 +195,10 @@ static void streams_window_unload(Window *window) {
   // Reset menu scroll
   menu_stack[menu_stack_pointer].menu_scroll_offset = 0;
 
-  window_destroy(window);
   // One less item in the menu stack
   menu_stack_pointer--;
+
+  window_destroy(window);
 }
 
 static void initiate_menu_scroll_timer(StreamsMenu* menu_ptr) {
