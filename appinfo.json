@@ -34,7 +34,13 @@
             "type": "png",
             "name": "viewer",
             "file": "icons/user.png"
-        }]
+        }, {
+            "menuIcon": true,
+            "type": "png",
+            "name": "IMAGE_MENU_ICON",
+            "file": "icons/menu_icon.png"
+        }
+        ]
     },
     "sdkVersion": "3",
     "shortName": "Twibble",
