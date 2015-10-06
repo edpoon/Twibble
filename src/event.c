@@ -8,6 +8,7 @@ enum {
   SUBTITLE1_KEY,
   SUBTITLE2_KEY,
   USERNAME_KEY,
+  ERROR_KEY
 };
 
 // Write message to buffer and send
@@ -30,8 +31,20 @@ void in_received_handler(DictionaryIterator *received, void *context) {
   HomeMenu *main_menu = (HomeMenu *)context;
 
   Tuple *tuple = dict_find(received, TITLE_KEY);
+  Tuple *error_tuple = dict_find(received, ERROR_KEY);
   if (tuple) {
     menu->count++;
+  }
+  // Error message is generated upon failure to retrieve proper info from API
+  else if (error_tuple) {
+    APP_LOG(APP_LOG_LEVEL_ERROR, error_tuple->value->cstring);
+    Window *window = window_stack_get_top_window();
+    Layer *window_layer = window_get_root_layer(window);
+    TextLayer *error_layer = text_layer_create(GRect(2, 32, 140, 120));
+    text_layer_set_text(error_layer, error_tuple->value->cstring);
+    text_layer_set_text_alignment(error_layer, GTextAlignmentCenter);
+    text_layer_set_font(error_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
+    layer_add_child(window_layer, text_layer_get_layer(error_layer));
   }
 
   tuple = dict_read_first(received);

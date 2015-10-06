@@ -5,7 +5,8 @@
         "TITLE_KEY": 2,
         "SUBTITLE1_KEY": 3,
         "SUBTITLE2_KEY": 4,
-        "USERNAME_KEY": 5
+        "USERNAME_KEY": 5,
+        "ERROR_KEY": 6
     },
     "capabilities": [
         "configurable"
