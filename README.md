@@ -15,8 +15,8 @@ Features include:
 
 ![Twibble Games menu](./screenshots/screenshot_games.png)
 ![Twibble Games menu colour](./screenshots/screenshot_games_colour.png)
-![Twibble Channel menu](./screenshots/screenshots_channel.png)
-![Twibble Channel menu colour](./screenshots/screenshots_channel_colour.png)
+![Twibble Channel menu](./screenshots/screenshot_channel.png)
+![Twibble Channel menu colour](./screenshots/screenshot_channel_colour.png)
 
 ## Building and Installing
 
