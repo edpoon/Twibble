@@ -143,17 +143,6 @@ function getStreams(game, offset) {
     sendMessage();
 }
 
-Pebble.addEventListener("ready", function(e) {
-    var username = localStorage.getItem('username');
-    if (username) {
-        var message = {
-            USERNAME_KEY: username
-        };
-        messages.push(message);
-        sendMessage();
-    }
-});
-
 // Configuration window
 Pebble.addEventListener("showConfiguration", function(e) {
     Pebble.openURL('https://api.twitch.tv/kraken/oauth2/authorize?response_type=token&client_id=kqxn6nov00how5uom46vlxb7p32xvf6&redirect_uri=pebblejs://close&scope=user_read&force_verify=true');
@@ -164,16 +153,6 @@ Pebble.addEventListener("webviewclosed", function(e) {
     // Grab the token from the URL
     var OAUTH_TOKEN = e.response.slice(13, 43);
     localStorage.setItem('OAUTH_TOKEN', OAUTH_TOKEN);
-    // Grab the Twitch username
-    if (OAUTH_TOKEN) {
-        var url = 'https://api.twitch.tv/kraken?oauth_token=' + localStorage.getItem('OAUTH_TOKEN');
-        var response = sendDataRequest(url);
-        var username = response.token.user_name;
-        localStorage.setItem('username', username);
-    } else {
-        // The user logged off
-        localStorage.removeItem('username');
-    }
 });
 
 // Called when incoming message from the Pebble is received
@@ -187,9 +166,6 @@ Pebble.addEventListener("appmessage", function(e) {
             break;
         case "Following":
             getFollowedStreams(e.payload.OFFSET_KEY);
-            break;
-        case "User":
-            getUserName();
             break;
         default:
             getStreams(e.payload.QUERY_KEY, e.payload.OFFSET_KEY);
