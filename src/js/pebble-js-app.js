@@ -55,7 +55,7 @@ function getFollowedStreams(offset) {
             var message = {
                 TITLE_KEY: streamer,
                 SUBTITLE1_KEY: game,
-                SUBTITLE1_KEY: viewers
+                SUBTITLE2_KEY: viewers
             };
             messages.push(message);
         }
