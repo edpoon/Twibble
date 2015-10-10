@@ -7,7 +7,6 @@ enum {
   TITLE_KEY,
   SUBTITLE1_KEY,
   SUBTITLE2_KEY,
-  USERNAME_KEY,
   ERROR_KEY
 };
 
@@ -53,8 +52,6 @@ void display_error(char *error_message) {
 
 // Called when a message is received from PebbleKitJS
 void in_received_handler(DictionaryIterator *received, void *context) {
-  StreamsMenu *menu = (StreamsMenu *)context;
-
   // Check if there was an error in retrieving information
   Tuple *error_tuple = dict_find(received, ERROR_KEY);
   if (error_tuple) {
@@ -62,6 +59,7 @@ void in_received_handler(DictionaryIterator *received, void *context) {
     return;
   }
 
+  StreamsMenu *menu = (StreamsMenu *)context;
   Tuple *tuple = dict_read_first(received);
   menu->count++;
   while (tuple) {

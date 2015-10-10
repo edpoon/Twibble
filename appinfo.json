@@ -5,8 +5,7 @@
         "TITLE_KEY": 2,
         "SUBTITLE1_KEY": 3,
         "SUBTITLE2_KEY": 4,
-        "USERNAME_KEY": 5,
-        "ERROR_KEY": 6
+        "ERROR_KEY": 5
     },
     "capabilities": [
         "configurable"
@@ -23,10 +22,6 @@
             "type": "png",
             "name": "heart",
             "file": "icons/heart.png"
-        }, {
-            "type": "png",
-            "name": "glitch",
-            "file": "icons/glitch.png"
         }, {
             "type": "png",
             "name": "video_camera",
