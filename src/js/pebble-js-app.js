@@ -42,7 +42,9 @@ function getFollowedStreams(offset) {
     var url = 'https://api.twitch.tv/kraken/streams/followed?limit=5&oauth_token=' + localStorage.getItem('OAUTH_TOKEN') + '&offset=' + offset;
     var response = sendDataRequest(url);
     if (response === "error" || !response || !response.hasOwnProperty('_total')) {
-        var message = { ERROR_KEY: ":( Couldn't fetch followed streams. Log in via watch and check connection." };
+        var message = {
+            ERROR_KEY: "LOGIN/CHECK DATA CONNECTION AND TRY AGAIN."
+        };
         messages.push(message);
     } else {
         // Number of messages to send
@@ -67,7 +69,9 @@ function getTopStreams(offset) {
     var url = 'https://api.twitch.tv/kraken/streams?limit=5&offset=' + offset;
     var response = sendDataRequest(url);
     if (!response || response === "error" || !response.hasOwnProperty('_total')) {
-        var message = { ERROR_KEY: "Error retrieving top streams. Verify phone and internet connection." };
+        var message = {
+            ERROR_KEY: "CHECK DATA CONNECTION AND TRY AGAIN."
+        };
         messages.push(message);
     } else {
         // Number of messages to send
@@ -92,7 +96,9 @@ function getTopGames(offset) {
     var url = 'https://api.twitch.tv/kraken/games/top?limit=&offset=' + offset;
     var response = sendDataRequest(url);
     if (!response || response === "error" || !response.hasOwnProperty('_total')) {
-        var message = { ERROR_KEY: "Error retrieving top games. Verify phone and internet connection." };
+        var message = {
+            ERROR_KEY: "CHECK DATA CONNECTION AND TRY AGAIN."
+        };
         messages.push(message);
     } else {
         // Number of messages to send
@@ -164,6 +170,9 @@ Pebble.addEventListener("webviewclosed", function(e) {
         var response = sendDataRequest(url);
         var username = response.token.user_name;
         localStorage.setItem('username', username);
+    } else {
+        // The user logged off
+        localStorage.removeItem('username');
     }
 });
 
