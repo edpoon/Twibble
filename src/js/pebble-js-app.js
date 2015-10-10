@@ -137,23 +137,15 @@ function getStreams(game, offset) {
     sendMessage();
 }
 
-// Retrieves Twitch username using the locally stored oauth token
-function getUserName() {
-    var url = 'https://api.twitch.tv/kraken?oauth_token=' + localStorage.getItem('OAUTH_TOKEN');
-    var response = sendDataRequest(url);
-    var username = response.token.user_name;
-    if (!username) {
-        username = "Not Logged In";
-    }
-    var message = {
-        USERNAME_KEY: username
-    };
-    messages.push(message);
-    sendMessage();
-}
-
 Pebble.addEventListener("ready", function(e) {
-    getUserName();
+    var username = localStorage.getItem('username');
+    if (username) {
+        var message = {
+            USERNAME_KEY: username
+        };
+        messages.push(message);
+        sendMessage();
+    }
 });
 
 // Configuration window
@@ -165,7 +157,14 @@ Pebble.addEventListener("showConfiguration", function(e) {
 Pebble.addEventListener("webviewclosed", function(e) {
     // Grab the token from the URL
     var OAUTH_TOKEN = e.response.slice(13, 43);
-    localStorage.setItem("OAUTH_TOKEN", OAUTH_TOKEN);
+    localStorage.setItem('OAUTH_TOKEN', OAUTH_TOKEN);
+    // Grab the Twitch username
+    if (OAUTH_TOKEN) {
+        var url = 'https://api.twitch.tv/kraken?oauth_token=' + localStorage.getItem('OAUTH_TOKEN');
+        var response = sendDataRequest(url);
+        var username = response.token.user_name;
+        localStorage.setItem('username', username);
+    }
 });
 
 // Called when incoming message from the Pebble is received
