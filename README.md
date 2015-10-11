@@ -13,11 +13,11 @@ Features include:
 
 ## Screenshots
 
-![Twibble Games menu](./screenshots/screenshot_games.png)
-![Twibble Games menu colour](./screenshots/screenshot_games_colour.png)
-![Twibble Channel menu](./screenshots/screenshot_channel.png)
-![Twibble Channel menu colour](./screenshots/screenshot_channel_colour.png)
-![Twibble Main menu](./screenshots/screenshot_main.png)
+Aplite | Basalt
+------------- | -------------
+![Twibble main menu](./screenshots/screenshot_main.png) | ![Twibble main menu color](./screenshots/screenshot_main_color.png)
+![Twibble games menu](./screenshots/screenshot_games.png) | ![Twibble games menu colour](./screenshots/screenshot_games_colour.png)
+![Twibble channel menu](./screenshots/screenshot_channel.png) | ![Twibble channel menu colour](./screenshots/screenshot_channel_colour.png)
 
 ## Building and Installing
 
