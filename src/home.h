@@ -9,7 +9,7 @@
 typedef struct {
   MenuLayer *layer;
   char *titles[NUM_MENU_ITEMS];
-  GBitmap *icons[NUM_MENU_ITEMS];
+  GBitmap *icons[4];
 } HomeMenu;
 
 void init(void);
