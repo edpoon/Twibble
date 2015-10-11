@@ -100,19 +100,35 @@ void in_received_handler(DictionaryIterator *received, void *context) {
     switch (tuple->key) {
     case TITLE_KEY:
       // Allocate memory for another pointer
-      menu->titles = realloc(menu->titles, menu->count * sizeof(char *));
+      // If memory has not already been allocated, use malloc, since realloc fails on watch in that case
+      if (!menu->titles) {
+        menu->titles = malloc(menu->count * sizeof(char *));
+      }
+      else {
+        menu->titles = realloc(menu->titles, menu->count * sizeof(char *));
+      }
       // Allocate memory for another string
       menu->titles[menu->count - 1] = malloc(strlen(tuple->value->cstring) + 1);
       // Add title to storage
       strcpy(menu->titles[menu->count - 1], tuple->value->cstring);
       break;
     case SUBTITLE1_KEY:
-      menu->subtitles1 = realloc(menu->subtitles1, menu->count * sizeof(char *));
+      if (!menu->subtitles1) {
+        menu->subtitles1 = malloc(menu->count * sizeof(char *));
+      }
+      else {
+        menu->subtitles1 = realloc(menu->subtitles1, menu->count * sizeof(char *));
+      }
       menu->subtitles1[menu->count - 1] = malloc(strlen(tuple->value->cstring) + 1);
       strcpy(menu->subtitles1[menu->count - 1], tuple->value->cstring);
       break;
     case SUBTITLE2_KEY:
-      menu->subtitles2 = realloc(menu->subtitles2, menu->count * sizeof(char *));
+      if (!menu->subtitles2) {
+        menu->subtitles2 = malloc(menu->count * sizeof(char *));
+      }
+      else {
+        menu->subtitles2 = realloc(menu->subtitles2, menu->count * sizeof(char *));
+      }
       menu->subtitles2[menu->count - 1] = malloc(strlen(tuple->value->cstring) + 1);
       strcpy(menu->subtitles2[menu->count - 1], tuple->value->cstring);
       break;
