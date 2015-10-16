@@ -52,15 +52,15 @@ static void main_window_load(Window *window) {
   menu->layer = menu_layer_create(bounds);
 
   menu_layer_set_callbacks(menu->layer, menu, (MenuLayerCallbacks) {
-    .get_num_sections = get_num_sections_callback,
-    .get_num_rows = get_num_rows_callback,
-    .draw_row = draw_row_callback,
-        .select_click = menu_layer_select_callback,
-        #ifdef PBL_PLATFORM_BASALT
-        .get_header_height = get_header_height_callback,
-        .draw_header = draw_header_callback
-        #endif
-  });
+      .get_num_sections = get_num_sections_callback,
+      .get_num_rows = get_num_rows_callback,
+      .draw_row = draw_row_callback,
+      .select_click = menu_layer_select_callback,
+#ifdef PBL_PLATFORM_BASALT
+      .get_header_height = get_header_height_callback,
+      .draw_header = draw_header_callback
+#endif
+      });
 
   menu_layer_set_click_config_onto_window(menu->layer, window);
   layer_add_child(window_layer, menu_layer_get_layer(menu->layer));
@@ -90,9 +90,9 @@ void init(void) {
 
   // Set handlers to manage the elements inside the window
   window_set_window_handlers(window, (WindowHandlers) {
-    .load = main_window_load,
-    .unload = main_window_unload,
-  });
+      .load = main_window_load,
+      .unload = main_window_unload,
+      });
 
   HomeMenu *menu = malloc(sizeof(HomeMenu));
   memset(menu, 0, sizeof(HomeMenu));
