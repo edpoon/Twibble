@@ -22,4 +22,4 @@ typedef struct {
   bool moving_forwards_in_menu;
 } StreamsMenu;
 
-void streams_window_init(char *query);
+void streams_menu_init(char *query);
