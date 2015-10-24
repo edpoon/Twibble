@@ -27,7 +27,7 @@ static int16_t get_cell_height(struct MenuLayer *menu_layer, MenuIndex *cell_ind
 static void initiate_menu_scroll_timer(StreamsMenu* menu_ptr);
 static void scroll_menu_callback(void* data);
 
-void streams_menu_init(char *query) {
+void streams_window_init(char *query) {
   // New item in menu stack
   menu_stack_pointer++;
 
@@ -58,7 +58,7 @@ void streams_menu_init(char *query) {
 static void menu_layer_select_click(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context) {
   StreamsMenu *menu = (StreamsMenu *)callback_context;
   if (strcmp(menu->query, "Games") == 0) {
-    streams_menu_init(menu->titles[cell_index->row]);
+    streams_window_init(menu->titles[cell_index->row]);
   }
 }
 
