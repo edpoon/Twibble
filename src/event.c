@@ -24,63 +24,19 @@ void send_message(const char *query, uint8_t offset) {
   app_message_outbox_send();
 }
 
-typedef struct {
-  GBitmap *image;
-  BitmapLayer *image_layer;
-  TextLayer *message_layer;
-} ErrorScreen;
-
-void error_window_load(Window *window) {
-  char *error_message = window_get_user_data(window);
-  ErrorScreen *error = malloc(sizeof(ErrorScreen));
-  memset(error, 0, sizeof(ErrorScreen));
-
-  Layer *window_layer = window_get_root_layer(window);
-  GRect bounds = layer_get_bounds(window_layer);
-
-  // Draw error image
-  error->image = gbitmap_create_with_resource(RESOURCE_ID_error);
-  GRect error_image_bounds = gbitmap_get_bounds(error->image);
-  error->image_layer = bitmap_layer_create(GRect(0, 0, bounds.size.w, error_image_bounds.size.h));
-#ifdef PBL_PLATFORM_BASALT
-  bitmap_layer_set_compositing_mode(error->image_layer, GCompOpSet);
-#elif PBL_PLATFORM_APLITE
-  bitmap_layer_set_compositing_mode(error->image_layer, GCompOpAssignInverted);
-#endif
-  bitmap_layer_set_bitmap(error->image_layer, error->image);
-  layer_add_child(window_layer, bitmap_layer_get_layer(error->image_layer));
-
-  // Draw error message
-  error->message_layer = text_layer_create(GRect(0, error_image_bounds.size.h, bounds.size.w, bounds.size.h - error_image_bounds.size.h));
-  text_layer_set_text(error->message_layer, error_message);
-  text_layer_set_text_alignment(error->message_layer, GTextAlignmentCenter);
-  text_layer_set_font(error->message_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
-
-  layer_add_child(window_layer, text_layer_get_layer(error->message_layer));
-  window_set_user_data(window, error);
-}
-
-void error_window_unload(Window *window) {
-  ErrorScreen *error = window_get_user_data(window);
-  gbitmap_destroy(error->image);
-  bitmap_layer_destroy(error->image_layer);
-  text_layer_destroy(error->message_layer);
-  free(error);
-  window_destroy(window);
-}
-
-// Error message generated upon failure to retrieve proper info from API
-static void display_error(char *error_message) {
-  Window *window = window_create();
-  window_set_window_handlers(window, (WindowHandlers) {
-      .load = error_window_load,
-      .unload = error_window_unload,
-      });
-  window_set_user_data(window, error_message);
-
-  bool animated = false;
-  window_stack_pop(animated);
-  window_stack_push(window, animated);
+static char ** store_message_in_buffer(int index, char **buffer, char *message) {
+  // Allocate memory for another pointer
+  // If memory has not already been allocated, use malloc, since realloc fails on watch in that case
+  if (!buffer) {
+    buffer = malloc(index * sizeof(char *));
+  } else {
+    buffer = realloc(buffer, index * sizeof(char *));
+  }
+  // Allocate memory for another string
+  buffer[index - 1] = malloc(strlen(message) + 1);
+  // Add title to storage
+  strcpy(buffer[index - 1], message);
+  return buffer;
 }
 
 // Called when a message is received from PebbleKitJS
@@ -90,7 +46,7 @@ void in_received_handler(DictionaryIterator *received, void *context) {
   // Check if there was an error in retrieving information
   Tuple *error_tuple = dict_find(received, ERROR_KEY);
   if (error_tuple) {
-    display_error(error_tuple->value->cstring);
+    display_status(error_tuple->value->cstring);
     return;
   }
 
@@ -99,38 +55,13 @@ void in_received_handler(DictionaryIterator *received, void *context) {
   while (tuple) {
     switch (tuple->key) {
       case TITLE_KEY:
-        // Allocate memory for another pointer
-        // If memory has not already been allocated, use malloc, since realloc fails on watch in that case
-        if (!menu->titles) {
-          menu->titles = malloc(menu->count * sizeof(char *));
-        }
-        else {
-          menu->titles = realloc(menu->titles, menu->count * sizeof(char *));
-        }
-        // Allocate memory for another string
-        menu->titles[menu->count - 1] = malloc(strlen(tuple->value->cstring) + 1);
-        // Add title to storage
-        strcpy(menu->titles[menu->count - 1], tuple->value->cstring);
+        menu->titles = store_message_in_buffer(menu->count, menu->titles, tuple->value->cstring);
         break;
       case SUBTITLE1_KEY:
-        if (!menu->subtitles1) {
-          menu->subtitles1 = malloc(menu->count * sizeof(char *));
-        }
-        else {
-          menu->subtitles1 = realloc(menu->subtitles1, menu->count * sizeof(char *));
-        }
-        menu->subtitles1[menu->count - 1] = malloc(strlen(tuple->value->cstring) + 1);
-        strcpy(menu->subtitles1[menu->count - 1], tuple->value->cstring);
+        menu->subtitles1 = store_message_in_buffer(menu->count, menu->subtitles1, tuple->value->cstring);
         break;
       case SUBTITLE2_KEY:
-        if (!menu->subtitles2) {
-          menu->subtitles2 = malloc(menu->count * sizeof(char *));
-        }
-        else {
-          menu->subtitles2 = realloc(menu->subtitles2, menu->count * sizeof(char *));
-        }
-        menu->subtitles2[menu->count - 1] = malloc(strlen(tuple->value->cstring) + 1);
-        strcpy(menu->subtitles2[menu->count - 1], tuple->value->cstring);
+        menu->subtitles2 = store_message_in_buffer(menu->count, menu->subtitles2, tuple->value->cstring);
         break;
     }
     tuple = dict_read_next(received);

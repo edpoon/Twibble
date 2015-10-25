@@ -2,6 +2,7 @@
 
 #include <pebble.h>
 #include "streams.h"
+#include "status.h"
 
 void send_message(const char *query, uint8_t offset);
 void in_received_handler(DictionaryIterator *received, void *context);
