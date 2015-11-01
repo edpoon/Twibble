@@ -25,10 +25,8 @@ Aplite | Basalt
 Built and tested using version 3.4
 
 ### Platforms
-App has been tested on the Aplite platform (Pebble Classic B&W watch).
-The app should function on the Basalt platform (Pebble Time & Pebble Time Steel) as well, however it has only been tested via emulation.
-If you try it on these watches, please send us some feedback.
-[Link to App (TODO)](link)
+Compiled with SDK 3.6, working on Aplite and Basalt, not tested on Chalk.
+[Link to Twibble](http://apps.getpebble.com/en_US/application/5620481225ef793e5a00001a)
 
 ## Privacy
 User login information required to retrieve user's list of followed channels and display username.
