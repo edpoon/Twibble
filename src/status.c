@@ -13,12 +13,11 @@ void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   GRect window_bounds = layer_get_bounds(window_layer);
 
-  APP_LOG(APP_LOG_LEVEL_INFO, "Draw status image");
   // Draw status image
-    status_screen->image = gbitmap_create_with_resource(RESOURCE_ID_error);
-  GRect status_image_bounds = gbitmap_get_bounds(status_screen->image);
+  status_screen->image = gbitmap_create_with_resource(RESOURCE_ID_error);
+  GRect image_bounds = gbitmap_get_bounds(status_screen->image);
 
-  status_screen->bitmap_layer = bitmap_layer_create(GRect(0, 0, window_bounds.size.w, status_image_bounds.size.h));
+  status_screen->bitmap_layer = bitmap_layer_create(GRect(0, 0, window_bounds.size.w, image_bounds.size.h));
 #ifdef PBL_PLATFORM_BASALT
   bitmap_layer_set_compositing_mode(status_screen->bitmap_layer, GCompOpSet);
 #elif PBL_PLATFORM_APLITE
@@ -27,7 +26,7 @@ void window_load(Window *window) {
   bitmap_layer_set_bitmap(status_screen->bitmap_layer, status_screen->image);
 
   // Draw status message
-  GRect status_layer_bounds = GRect(0, status_image_bounds.size.h, window_bounds.size.w, window_bounds.size.h - status_image_bounds.size.h);
+  GRect status_layer_bounds = GRect(0, image_bounds.size.h, window_bounds.size.w, window_bounds.size.h - image_bounds.size.h);
   status_screen->text_layer = text_layer_create(status_layer_bounds);
   text_layer_set_text(status_screen->text_layer, status_message);
   text_layer_set_text_alignment(status_screen->text_layer, GTextAlignmentCenter);
@@ -48,13 +47,14 @@ static void window_unload(Window *window) {
   window_destroy(window);
 }
 
-// Error message generated upon failure to retrieve proper info from API
+// Display current status of app on phone
 void display_status(char *status_message) {
   Window *window = window_create();
+  
   window_set_window_handlers(window, (WindowHandlers) {
-      .load = window_load,
-        .unload = window_unload,
-        });
+    .load = window_load,
+    .unload = window_unload,
+  });
 
   window_set_user_data(window, status_message);
 

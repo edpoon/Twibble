@@ -3,7 +3,6 @@
 #include "event.h"
 
 typedef struct {
-  Window *window;
   MenuLayer *layer;
   uint16_t count;
   char *query;
