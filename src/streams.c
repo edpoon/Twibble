@@ -126,7 +126,7 @@ static void draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex 
   if (menuIndex.row == cell_index->row) {
     graphics_draw_text(
       ctx,
-      menu->subtitle_scrolling_required ? menu->first_subtitles[cell_index->row] + menu->menu_scroll_offset: menu->first_subtitles[cell_index->row],
+      menu->subtitle_scrolling_required ? menu->subtitles1[cell_index->row] + menu->menu_scroll_offset: menu->subtitles1[cell_index->row],
       GOTHIC_18,
       GRect(5, 15, 140, 15),
       GTextOverflowModeTrailingEllipsis,
@@ -136,7 +136,7 @@ static void draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex 
   } else {
     graphics_draw_text(
       ctx,
-      menu->first_subtitles[cell_index->row],
+      menu->subtitles1[cell_index->row],
       GOTHIC_18,
       GRect(5, 15, 140, 15),
       GTextOverflowModeTrailingEllipsis,
@@ -155,19 +155,19 @@ static void draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex 
 #endif
 
   // Draw second subtitle
-  graphics_draw_text(ctx, menu->second_subtitles[cell_index->row], GOTHIC_18,
+  graphics_draw_text(ctx, menu->subtitles2[cell_index->row], GOTHIC_18,
    GRect(25, 32, 140, 15), GTextOverflowModeTrailingEllipsis,
    GTextAlignmentLeft, NULL);
 
   // Need to determine whether to keep scrolling
   int title_length = strlen(menu->titles[menuIndex.row]);
-  int first_subtitle_length = strlen(menu->first_subtitles[menuIndex.row]);
+  int subtitle1_length = strlen(menu->subtitles1[menuIndex.row]);
 
   if (title_length - MENU_CHARS_VISIBLE - menu->menu_scroll_offset > 0) {
     menu->scrolling_still_required = true;
   }
 
-  if (first_subtitle_length - SUBTITLE_CHARS_VISIBLE - menu->menu_scroll_offset > 0) {
+  if (subtitle1_length - SUBTITLE_CHARS_VISIBLE - menu->menu_scroll_offset > 0) {
     menu->subtitle_scrolling_required = true;
   }
 }
@@ -178,7 +178,7 @@ static uint16_t get_num_sections_callback(MenuLayer *menu_layer, void *ctx) {
 
 static uint16_t get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *ctx) {
   StreamsMenu *menu = ctx;
-
+  
   return menu->count;
 }
 
@@ -203,8 +203,8 @@ static void window_load(Window *window) {
   menu_stack[menu_stack_pointer].count = 0;
   menu_stack[menu_stack_pointer].query = window_get_user_data(window);
   menu_stack[menu_stack_pointer].titles = malloc(sizeof(char *));
-  menu_stack[menu_stack_pointer].first_subtitles = malloc(sizeof(char *));
-  menu_stack[menu_stack_pointer].second_subtitles = malloc(sizeof(char *));
+  menu_stack[menu_stack_pointer].subtitles1 = malloc(sizeof(char *));
+  menu_stack[menu_stack_pointer].subtitles2 = malloc(sizeof(char *));
   menu_stack[menu_stack_pointer].viewer_icon = gbitmap_create_with_resource(RESOURCE_ID_viewer);
 
   menu_layer_set_callbacks(menu_stack[menu_stack_pointer].layer, &menu_stack[menu_stack_pointer], (MenuLayerCallbacks) {
@@ -231,13 +231,13 @@ static void window_unload(Window *window) {
 
   for (uint8_t i = 0; i < menu_stack[menu_stack_pointer].count; i++) {
     free(menu_stack[menu_stack_pointer].titles[i]);
-    free(menu_stack[menu_stack_pointer].first_subtitles[i]);
-    free(menu_stack[menu_stack_pointer].second_subtitles[i]);
+    free(menu_stack[menu_stack_pointer].subtitles1[i]);
+    free(menu_stack[menu_stack_pointer].subtitles2[i]);
   }
 
   free(menu_stack[menu_stack_pointer].titles);
-  free(menu_stack[menu_stack_pointer].first_subtitles);
-  free(menu_stack[menu_stack_pointer].second_subtitles);
+  free(menu_stack[menu_stack_pointer].subtitles1);
+  free(menu_stack[menu_stack_pointer].subtitles2);
 
   gbitmap_destroy(menu_stack[menu_stack_pointer].viewer_icon);
   menu_layer_destroy(menu_stack[menu_stack_pointer].layer);

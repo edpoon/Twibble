@@ -58,10 +58,10 @@ void in_received_handler(DictionaryIterator *received, void *context) {
         menu->titles = store_message_in_buffer(menu->count, menu->titles, tuple->value->cstring);
         break;
       case SUBTITLE1_KEY:
-        menu->first_subtitles = store_message_in_buffer(menu->count, menu->first_subtitles, tuple->value->cstring);
+        menu->subtitles1 = store_message_in_buffer(menu->count, menu->subtitles1, tuple->value->cstring);
         break;
       case SUBTITLE2_KEY:
-        menu->second_subtitles = store_message_in_buffer(menu->count, menu->second_subtitles, tuple->value->cstring);
+        menu->subtitles2 = store_message_in_buffer(menu->count, menu->subtitles2, tuple->value->cstring);
         break;
     }
     tuple = dict_read_next(received);
