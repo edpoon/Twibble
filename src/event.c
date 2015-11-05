@@ -5,8 +5,8 @@ enum {
   QUERY_KEY,
   OFFSET_KEY,
   TITLE_KEY,
-  SUBTITLE1_KEY,
-  SUBTITLE2_KEY,
+  FIRST_SUBTITLE_KEY,
+  SECOND_SUBTITLE_KEY,
   ERROR_KEY
 };
 
@@ -57,11 +57,11 @@ void in_received_handler(DictionaryIterator *received, void *context) {
       case TITLE_KEY:
         menu->titles = store_message_in_buffer(menu->count, menu->titles, tuple->value->cstring);
         break;
-      case SUBTITLE1_KEY:
-        menu->subtitles1 = store_message_in_buffer(menu->count, menu->subtitles1, tuple->value->cstring);
+      case FIRST_SUBTITLE_KEY:
+        menu->first_subtitles = store_message_in_buffer(menu->count, menu->first_subtitles, tuple->value->cstring);
         break;
-      case SUBTITLE2_KEY:
-        menu->subtitles2 = store_message_in_buffer(menu->count, menu->subtitles2, tuple->value->cstring);
+      case SECOND_SUBTITLE_KEY:
+        menu->second_subtitles = store_message_in_buffer(menu->count, menu->second_subtitles, tuple->value->cstring);
         break;
     }
     tuple = dict_read_next(received);

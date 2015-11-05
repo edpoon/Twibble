@@ -55,8 +55,8 @@ function getFollowedStreams(offset) {
             // Add items to array in preparation to send
             var message = {
                 TITLE_KEY: streamer,
-                SUBTITLE1_KEY: game,
-                SUBTITLE2_KEY: viewers
+                FIRST_SUBTITLE_KEY: game,
+                SECOND_SUBTITLE_KEY: viewers
             };
             messages.push(message);
         }
@@ -82,8 +82,8 @@ function getTopStreams(offset) {
             // Add items to array in preparation to send
             var message = {
                 TITLE_KEY: streamer,
-                SUBTITLE1_KEY: game,
-                SUBTITLE2_KEY: viewers
+                FIRST_SUBTITLE_KEY: game,
+                SECOND_SUBTITLE_KEY: viewers
             };
             messages.push(message);
         }
@@ -108,8 +108,8 @@ function getTopGames(offset) {
             var viewers = response.top[i].viewers.toString();
             var message = {
                 TITLE_KEY: game,
-                SUBTITLE1_KEY: channels,
-                SUBTITLE2_KEY: viewers
+                FIRST_SUBTITLE_KEY: channels,
+                SECOND_SUBTITLE_KEY: viewers
             };
             messages.push(message);
         }
@@ -135,8 +135,8 @@ function getStreams(game, offset) {
             var viewers = response.streams[i].viewers.toString();
             var message = {
                 TITLE_KEY: status,
-                SUBTITLE1_KEY: streamer,
-                SUBTITLE2_KEY: viewers
+                FIRST_SUBTITLE_KEY: streamer,
+                SECOND_SUBTITLE_KEY: viewers
             };
             messages.push(message);
         }
