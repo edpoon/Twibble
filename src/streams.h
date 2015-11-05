@@ -7,8 +7,8 @@ typedef struct {
   uint16_t count;
   char *query;
   char **titles;
-  char **subtitles1;
-  char **subtitles2;
+  char **first_subtitles;
+  char **second_subtitles;
   // Icon that will be used for the number of viewers
   GBitmap *viewer_icon;
 
