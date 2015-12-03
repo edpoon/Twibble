@@ -18,10 +18,11 @@ void window_load(Window *window) {
   GRect image_bounds = gbitmap_get_bounds(status_screen->image);
 
   status_screen->bitmap_layer = bitmap_layer_create(GRect(0, 0, window_bounds.size.w, image_bounds.size.h));
-#ifdef PBL_PLATFORM_BASALT
-  bitmap_layer_set_compositing_mode(status_screen->bitmap_layer, GCompOpSet);
-#elif PBL_PLATFORM_APLITE
+
+#ifdef PBL_PLATFORM_APLITE
   bitmap_layer_set_compositing_mode(status_screen->bitmap_layer, GCompOpAssignInverted);
+#else
+  bitmap_layer_set_compositing_mode(status_screen->bitmap_layer, GCompOpSet);
 #endif
   bitmap_layer_set_bitmap(status_screen->bitmap_layer, status_screen->image);
 
@@ -50,7 +51,7 @@ static void window_unload(Window *window) {
 // Display current status of app on phone
 void display_status(char *status_message) {
   Window *window = window_create();
-  
+
   window_set_window_handlers(window, (WindowHandlers) {
     .load = window_load,
     .unload = window_unload,

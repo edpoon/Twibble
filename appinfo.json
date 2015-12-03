@@ -45,10 +45,11 @@
     "shortName": "Twibble",
     "targetPlatforms": [
         "aplite",
-        "basalt"
+        "basalt",
+        "chalk"
     ],
     "uuid": "2457eaaa-989c-4c1f-8d8f-9110fe84cad2",
-    "versionLabel": "1.0",
+    "versionLabel": "1.1",
     "watchapp": {
         "watchface": false
     }

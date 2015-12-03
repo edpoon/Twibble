@@ -146,12 +146,12 @@ static void draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex 
   }
 
   // Draw viewer icon according to platform
-#ifdef PBL_PLATFORM_BASALT
-  graphics_context_set_compositing_mode(ctx, GCompOpSet);
-  graphics_draw_bitmap_in_rect(ctx, menu->viewer_icon, GRect(5, 35, 20, 20));
-#elif PBL_PLATFORM_APLITE
+#ifdef PBL_PLATFORM_APLITE
   graphics_context_set_compositing_mode(ctx, GCompOpAssignInverted);
   graphics_draw_bitmap_in_rect(ctx, menu->viewer_icon, GRect(5, 37, 14, 14));
+#else
+  graphics_context_set_compositing_mode(ctx, GCompOpSet);
+  graphics_draw_bitmap_in_rect(ctx, menu->viewer_icon, GRect(5, 35, 20, 20));
 #endif
 
   // Draw second subtitle
