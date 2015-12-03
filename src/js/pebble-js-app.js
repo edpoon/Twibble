@@ -146,7 +146,7 @@ function getStreams(game, offset) {
 
 // Configuration window
 Pebble.addEventListener("showConfiguration", function(e) {
-    Pebble.openURL('https://api.twitch.tv/kraken/oauth2/authorize?response_type=token&client_id=TWIBBLE_CLIENT_ID&redirect_uri=pebblejs://close&scope=user_read&force_verify=true');
+    Pebble.openURL('https://api.twitch.tv/kraken/oauth2/authorize?response_type=token&client_id=kqxn6nov00how5uom46vlxb7p32xvf6&redirect_uri=pebblejs://close&scope=user_read&force_verify=true');
 });
 
 // Called when the configuration window is closed
