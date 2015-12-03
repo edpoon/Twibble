@@ -13,11 +13,12 @@ Features include:
 
 ## Screenshots
 
-Aplite | Basalt
-------------- | -------------
-![Twibble main menu](./screenshots/screenshot_main.png) | ![Twibble main menu color](./screenshots/screenshot_main_color.png)
-![Twibble games menu](./screenshots/screenshot_games.png) | ![Twibble games menu colour](./screenshots/screenshot_games_colour.png)
-![Twibble channel menu](./screenshots/screenshot_channel.png) | ![Twibble channel menu colour](./screenshots/screenshot_channel_colour.png)
+Aplite | Basalt | Chalk
+------------- | ------------- | ------------- 
+(./screenshots/aplite_main.png) | (./screenshots/basalt_main.png) | (./screenshots/chalk_main.png)
+(./screenshots/aplite_games.png) | (./screenshots/basalt_games.png) | (./screenshots/chalk_games.png)
+(./screenshots/aplite_channels.png) | (./screenshots/basalt_channels.png) | (./screenshots/chalk_channels.png)
+(./screenshots/aplite_channels_detail.png) | (./screenshots/basalt_channels_detail.png) | (./screenshots/chalk_channels_detail.png)
 
 ## Building and Installing
 
