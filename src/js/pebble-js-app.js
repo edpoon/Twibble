@@ -1,6 +1,7 @@
 // This will be an array of dicts to send to Pebble
 var messages = [];
 var MAX_ITEMS = 5;
+var CLIENT_ID='kqxn6nov00how5uom46vlxb7p32xvf6'
 
 // Function to send a message to the Pebble using AppMessage API
 function sendMessage() {
@@ -37,7 +38,6 @@ function sendDataRequest(url) {
 }
 
 function getFollowedStreams(offset) {
-    console.log('OAuth Token: ' + localStorage.getItem('OAUTH_TOKEN'));
     var url = 'https://api.twitch.tv/kraken/streams/followed?limit=5&oauth_token=' + localStorage.getItem('OAUTH_TOKEN') + '&offset=' + offset;
     var response = sendDataRequest(url);
     if (response === "error" || !response || !response.hasOwnProperty('_total')) {
@@ -65,7 +65,7 @@ function getFollowedStreams(offset) {
 }
 
 function getTopStreams(offset) {
-    var url = 'https://api.twitch.tv/kraken/streams?limit=5&offset=' + offset;
+    var url = 'https://api.twitch.tv/kraken/streams?client_id=' + CLIENT_ID + '&limit=5&offset=' + offset;
     var response = sendDataRequest(url);
     if (!response || response === "error" || !response.hasOwnProperty('_total')) {
         var message = {
@@ -92,7 +92,7 @@ function getTopStreams(offset) {
 }
 
 function getTopGames(offset) {
-    var url = 'https://api.twitch.tv/kraken/games/top?limit=&offset=' + offset;
+    var url = 'https://api.twitch.tv/kraken/games/top?client_id=' + CLIENT_ID + '&limit=5&offset=' + offset;
     var response = sendDataRequest(url);
     if (!response || response === "error" || !response.hasOwnProperty('_total')) {
         var message = {
@@ -118,7 +118,7 @@ function getTopGames(offset) {
 }
 
 function getStreams(game, offset) {
-    var url = 'https://api.twitch.tv/kraken/streams?limit=5&game=' + game;
+    var url = 'https://api.twitch.tv/kraken/streams?client_id=' + CLIENT_ID + '&limit=5&game=' + game;
     var response = sendDataRequest(url);
     if (!response || response === "error" || !response.hasOwnProperty('_total')) {
         var message = {
@@ -146,7 +146,7 @@ function getStreams(game, offset) {
 
 // Configuration window
 Pebble.addEventListener("showConfiguration", function(e) {
-    Pebble.openURL('https://api.twitch.tv/kraken/oauth2/authorize?response_type=token&client_id=kqxn6nov00how5uom46vlxb7p32xvf6&redirect_uri=pebblejs://close&scope=user_read&force_verify=true');
+    Pebble.openURL('https://api.twitch.tv/kraken/oauth2/authorize?response_type=token&client_id=' + CLIENT_ID + '&redirect_uri=pebblejs://close&scope=user_read&force_verify=true');
 });
 
 // Called when the configuration window is closed
