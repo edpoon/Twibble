@@ -27,7 +27,7 @@ function sendMessage() {
 function sendDataRequest(url) {
     var req = new XMLHttpRequest();
     var response;
-    req.open('GET', url, false);
+    req.open('GET', url, true);
     req.send(null);
     if (req.readyState == 4 && req.status == 200) {
         response = JSON.parse(req.responseText);
