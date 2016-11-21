@@ -53,9 +53,9 @@ void display_status(char *status_message) {
   Window *window = window_create();
 
   window_set_window_handlers(window, (WindowHandlers) {
-    .load = window_load,
-    .unload = window_unload,
-  });
+                               .load = window_load,
+                               .unload = window_unload,
+                             });
 
   window_set_user_data(window, status_message);
 

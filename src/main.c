@@ -61,12 +61,12 @@ static void window_load(Window *window) {
   data->layer = menu_layer_create(bounds);
 
   menu_layer_set_callbacks(data->layer, data, (MenuLayerCallbacks) {
-    .get_num_sections = get_num_sections_callback,
-    .get_num_rows = get_num_rows_callback,
-    .draw_row = draw_row_callback,
-    .select_click = menu_layer_select_callback,
-    .get_cell_height = get_cell_height_callback
-  });
+                             .get_num_sections = get_num_sections_callback,
+                             .get_num_rows = get_num_rows_callback,
+                             .draw_row = draw_row_callback,
+                             .select_click = menu_layer_select_callback,
+                             .get_cell_height = get_cell_height_callback
+                           });
 
   menu_layer_set_click_config_onto_window(data->layer, window);
   layer_add_child(window_layer, menu_layer_get_layer(data->layer));
@@ -94,9 +94,9 @@ void init(void) {
 
   // Set handlers to manage the elements inside the window
   window_set_window_handlers(window, (WindowHandlers) {
-    .load = window_load,
-    .unload = window_unload,
-  });
+                               .load = window_load,
+                               .unload = window_unload,
+                             });
 
   MainMenuData *data = malloc(sizeof(MainMenuData));
   memset(data, 0, sizeof(MainMenuData));

@@ -24,9 +24,10 @@ void send_message(const char *query, uint8_t offset) {
   app_message_outbox_send();
 }
 
-static char ** store_message_in_buffer(int index, char **buffer, char *message) {
+static char **store_message_in_buffer(int index, char **buffer, char *message) {
   // Allocate memory for another pointer
-  // If memory has not already been allocated, use malloc, since realloc fails on watch in that case
+  // If memory has not already been allocated, use malloc, since realloc fails
+  // on watch in that case
   if (!buffer) {
     buffer = malloc(index * sizeof(char *));
   } else {
@@ -55,13 +56,16 @@ void in_received_handler(DictionaryIterator *received, void *context) {
   while (tuple) {
     switch (tuple->key) {
       case TITLE_KEY:
-        menu->titles = store_message_in_buffer(menu->count, menu->titles, tuple->value->cstring);
+        menu->titles = store_message_in_buffer(
+          menu->count, menu->titles, tuple->value->cstring);
         break;
       case FIRST_SUBTITLE_KEY:
-        menu->first_subtitles = store_message_in_buffer(menu->count, menu->first_subtitles, tuple->value->cstring);
+        menu->first_subtitles = store_message_in_buffer(
+          menu->count, menu->first_subtitles, tuple->value->cstring);
         break;
       case SECOND_SUBTITLE_KEY:
-        menu->second_subtitles = store_message_in_buffer(menu->count, menu->second_subtitles, tuple->value->cstring);
+        menu->second_subtitles = store_message_in_buffer(
+          menu->count, menu->second_subtitles, tuple->value->cstring);
         break;
     }
     tuple = dict_read_next(received);
@@ -75,6 +79,8 @@ void in_dropped_handler(AppMessageResult reason, void *context) {
 }
 
 // Called when PebbleKitJS does not acknowledge receipt of a message
-void out_failed_handler(DictionaryIterator *failed, AppMessageResult reason, void *context){
+void out_failed_handler(DictionaryIterator *failed,
+                        AppMessageResult reason,
+                        void *context) {
   APP_LOG(APP_LOG_LEVEL_INFO, "Phone did not receive message");
 }

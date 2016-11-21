@@ -17,7 +17,7 @@ typedef struct {
   bool subtitle_scrolling_required;
   int menu_scroll_offset;
   bool menu_reloading_to_scroll;
-  AppTimer* menu_scroll_timer;
+  AppTimer *menu_scroll_timer;
   bool moving_forwards_in_menu;
 } StreamsMenu;
 

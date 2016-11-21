@@ -19,8 +19,8 @@ static int8_t menu_stack_pointer = -1; // Points to the current position in the 
 //////////////////////////
 // Thanks to Damian Meher for sample code
 // See http://damianblog.com/2015/01/22/scroll_pebble_menus/
-static void scroll_menu_callback(void* data) {
-  StreamsMenu* menu = (StreamsMenu*) data;
+static void scroll_menu_callback(void *data) {
+  StreamsMenu *menu = (StreamsMenu *) data;
 
   if (!menu->layer) {
     return;
@@ -45,7 +45,7 @@ static void scroll_menu_callback(void* data) {
   menu->menu_scroll_timer = app_timer_register(SCROLL_MENU_ITEM_TIMER, scroll_menu_callback, menu);
 }
 
-static void initiate_menu_scroll_timer(StreamsMenu* menu_ptr) {
+static void initiate_menu_scroll_timer(StreamsMenu *menu_ptr) {
   // If there is already a timer then reschedule it, otherwise create one
   bool need_to_create_timer = true;
   menu_ptr->scrolling_still_required = false;
@@ -109,7 +109,7 @@ static void draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex 
       GTextOverflowModeTrailingEllipsis,
       GTextAlignmentLeft,
       NULL
-    );
+      );
   } else {
     graphics_draw_text(
       ctx,
@@ -119,20 +119,20 @@ static void draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex 
       GTextOverflowModeTrailingEllipsis,
       GTextAlignmentLeft,
       NULL
-    );
+      );
   }
 
   // Draw first subtitle
   if (menuIndex.row == cell_index->row) {
     graphics_draw_text(
       ctx,
-      menu->subtitle_scrolling_required ? menu->first_subtitles[cell_index->row] + menu->menu_scroll_offset: menu->first_subtitles[cell_index->row],
+      menu->subtitle_scrolling_required ? menu->first_subtitles[cell_index->row] + menu->menu_scroll_offset : menu->first_subtitles[cell_index->row],
       GOTHIC_18,
       GRect(5, 15, 140, 15),
       GTextOverflowModeTrailingEllipsis,
       GTextAlignmentLeft,
       NULL
-    );
+      );
   } else {
     graphics_draw_text(
       ctx,
@@ -142,7 +142,7 @@ static void draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex 
       GTextOverflowModeTrailingEllipsis,
       GTextAlignmentLeft,
       NULL
-    );
+      );
   }
 
   // Draw viewer icon according to platform
@@ -156,8 +156,8 @@ static void draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex 
 
   // Draw second subtitle
   graphics_draw_text(ctx, menu->second_subtitles[cell_index->row], GOTHIC_18,
-   GRect(25, 32, 140, 15), GTextOverflowModeTrailingEllipsis,
-   GTextAlignmentLeft, NULL);
+                     GRect(25, 32, 140, 15), GTextOverflowModeTrailingEllipsis,
+                     GTextAlignmentLeft, NULL);
 
   // Need to determine whether to keep scrolling
   int title_length = strlen(menu->titles[menuIndex.row]);
@@ -208,13 +208,13 @@ static void window_load(Window *window) {
   menu_stack[menu_stack_pointer].viewer_icon = gbitmap_create_with_resource(RESOURCE_ID_viewer);
 
   menu_layer_set_callbacks(menu_stack[menu_stack_pointer].layer, &menu_stack[menu_stack_pointer], (MenuLayerCallbacks) {
-    .get_num_sections = get_num_sections_callback,
-    .get_num_rows = get_num_rows_callback,
-    .get_cell_height = get_cell_height_callback,
-    .draw_row = draw_row_callback,
-    .selection_changed = selection_changed_callback,
-    .select_click = menu_layer_select_click_callback
-  });
+                             .get_num_sections = get_num_sections_callback,
+                             .get_num_rows = get_num_rows_callback,
+                             .get_cell_height = get_cell_height_callback,
+                             .draw_row = draw_row_callback,
+                             .selection_changed = selection_changed_callback,
+                             .select_click = menu_layer_select_click_callback
+                           });
 
   menu_layer_set_click_config_onto_window(menu_stack[menu_stack_pointer].layer, window);
 
@@ -260,9 +260,9 @@ void streams_window_init(char *query) {
 
   // Set handlers to manage the elements inside the window
   window_set_window_handlers(window, (WindowHandlers) {
-    .load = window_load,
-    .unload = window_unload,
-  });
+                               .load = window_load,
+                               .unload = window_unload,
+                             });
 
   window_set_user_data(window, query);
 
