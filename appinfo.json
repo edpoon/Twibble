@@ -45,8 +45,7 @@
     "shortName": "Twibble",
     "targetPlatforms": [
         "aplite",
-        "basalt",
-        "chalk"
+        "basalt"
     ],
     "uuid": "2457eaaa-989c-4c1f-8d8f-9110fe84cad2",
     "versionLabel": "1.3",

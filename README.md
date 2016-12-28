@@ -3,7 +3,7 @@
 ![Twibble Banner](./TwibbleBanner.png "Twibble Logo")
 
 ## Description
-Keep up to all your favorite streamers with Twibble, the Twitch Pebble app available [on the Pebble App Store.](http://apps.getpebble.com/en_US/application/5620481225ef793e5a00001a)
+Keep up to all your favorite streamers with Twibble, the Twitch Pebble (RIP) app available [on the Pebble App Store.](http://apps.getpebble.com/en_US/application/5620481225ef793e5a00001a)
 
 Features include:
 - Checking which of your followed streamers is online by signing in through app settings on your phone
@@ -13,12 +13,12 @@ Features include:
 Looking to contribute? That's great. We're always looking for contributions via the issue tracker and bug tracker. For suggestions on features, please use the feature request. If you find an error in the source code, file an issue or send a pull request.
 ## Screenshots
 
-Aplite | Basalt | Chalk
-------------- | ------------- | ------------- 
-![](./screenshots/aplite_main.png) | ![](./screenshots/basalt_main.png) | ![](./screenshots/chalk_main.png)
-![](./screenshots/aplite_games.png) | ![](./screenshots/basalt_games.png) | ![](./screenshots/chalk_games.png)
-![](./screenshots/aplite_channels.png) | ![](./screenshots/basalt_channels.png) | ![](./screenshots/chalk_channels.png)
-![](./screenshots/aplite_channels_detail.png) | ![](./screenshots/basalt_channels_detail.png) | ![](./screenshots/chalk_channels_detail.png)
+Aplite | Basalt
+------------- | -------------
+![](./screenshots/aplite_main.png) | ![](./screenshots/basalt_main.png)
+![](./screenshots/aplite_games.png) | ![](./screenshots/basalt_games.png)
+![](./screenshots/aplite_channels.png) | ![](./screenshots/basalt_channels.png)
+![](./screenshots/aplite_channels_detail.png) | ![](./screenshots/basalt_channels_detail.png)
 
 ## Building and Installing
 
@@ -44,4 +44,4 @@ Interaction with Twitch user services is provided using [Twitch's OAuth authenti
 ## Disclaimer
 We have no affiliation with Twitch Interactive, Inc.
 
-Use of the Twitch API is in accordance with the [following guidelines](http://www.twitch.tv/user/legal?page=api_terms_of_service)
+Use of the Twitch API is in accordance with the [following guidelines](http://www.twitch.tv/user/legal?page=api_terms_of_service).
